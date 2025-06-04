@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { createAdminSupabaseClient } from '@/utils/supabase-admin';
 
+// Force dynamic rendering for this route
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 // GET - Fetch email preferences for the current user
 export async function GET() {
   try {

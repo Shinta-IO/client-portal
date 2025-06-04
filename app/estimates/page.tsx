@@ -139,149 +139,149 @@ const EstimatesPage = () => {
   }
 
   return (
-    <div className="space-y-8 max-w-[1600px] mx-auto">
-      <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-              Estimates
-            </h1>
-            <p className="text-base text-gray-600 dark:text-gray-300 mt-2">
-              {isAdmin 
-                ? 'Manage project estimates and quotes for clients' 
-                : 'View and manage your project estimates'
-              }
-            </p>
-          </div>
-          
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-          >
-            <Plus className="h-4 w-4" />
-            {isAdmin ? 'New Estimate' : 'Request Estimate'}
-          </button>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Estimates
+          </h1>
+          <p className="text-gray-700 dark:text-gray-300 mt-2">
+            {isAdmin 
+              ? 'Manage project estimates and quotes for clients' 
+              : 'View and manage your project estimates'
+            }
+          </p>
         </div>
+        
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors w-full sm:w-auto justify-center"
+        >
+          <Plus className="h-4 w-4" />
+          {isAdmin ? 'New Estimate' : 'Request Estimate'}
+        </button>
+      </div>
 
-        {/* Filters and Search */}
+      {/* Filters and Search */}
+      <Card 
+        className="glass-card card-3d"
+        videoSrc="/card.mp4"
+        videoOpacity="opacity-50" 
+        videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
+        bgColor="bg-white dark:bg-gray-900/90"
+        borderColor="border-gray-200 dark:border-gray-700"
+        hybridMode={true}
+      >
+        <div className="p-4 md:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                <select
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value as 'all' | EstimateStatus)}
+                  className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-black dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                >
+                  <option value="all">All Estimates</option>
+                  <option value="draft">Draft</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="finalized">Finalized</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search estimates..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full sm:w-80 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              />
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Estimates Grid */}
+      {filteredEstimates.length === 0 ? (
         <Card 
-          className="mb-6 glass-card card-3d has-video"
+          className="glass-card card-3d"
           videoSrc="/card.mp4"
           videoOpacity="opacity-50" 
           videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-          bgColor="bg-slate-500/75 dark:bg-gray-900/80"
-          borderColor="border-gray-200 dark:border-gray-700/50"
+          bgColor="bg-white dark:bg-gray-900/90"
+          borderColor="border-gray-200 dark:border-gray-700"
+          hybridMode={true}
         >
-          <div className="p-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Filter className="h-4 w-4 text-white/70" />
-                  <select
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value as 'all' | EstimateStatus)}
-                    className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-700/80 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 backdrop-blur-sm"
-                  >
-                    <option value="all">All Estimates</option>
-                    <option value="draft">Draft</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                    <option value="finalized">Finalized</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search estimates..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full sm:w-80 rounded-lg border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 backdrop-blur-sm"
-                />
-              </div>
+          <div className="text-center py-12 p-6">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
+              <FileText className="h-8 w-8 text-gray-600 dark:text-gray-300" />
             </div>
+            <h3 className="mb-2 text-lg font-semibold text-black dark:text-white">
+              {filter === 'all' ? 'No estimates yet' : `No ${filter} estimates`}
+            </h3>
+            <p className="mb-6 text-gray-600 dark:text-gray-300">
+              {filter === 'all' 
+                ? 'Get started by creating your first estimate.'
+                : `No estimates match the "${filter}" filter.`
+              }
+            </p>
+            {filter === 'all' && (
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+                {isAdmin ? 'New Estimate' : 'Request Estimate'}
+              </button>
+            )}
           </div>
         </Card>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredEstimates.map((estimate) => (
+            <EstimateCard 
+              key={estimate.id} 
+              estimate={estimate} 
+              isAdmin={isAdmin}
+              onView={() => {
+                setSelectedEstimate(estimate);
+                setShowDetailModal(true);
+              }}
+            />
+          ))}
+        </div>
+      )}
 
-        {/* Estimates Grid */}
-        {filteredEstimates.length === 0 ? (
-          <Card 
-            className="glass-card card-3d has-video"
-            videoSrc="/card.mp4"
-            videoOpacity="opacity-40" 
-            videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-            bgColor="bg-slate-500/75 dark:bg-gray-900/80"
-            borderColor="border-gray-200 dark:border-gray-700/50"
-          >
-            <div className="text-center py-12 p-6">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                <FileText className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="mb-2 text-lg font-semibold text-white">
-                {filter === 'all' ? 'No estimates yet' : `No ${filter} estimates`}
-              </h3>
-              <p className="mb-6 text-white/80">
-                {filter === 'all' 
-                  ? 'Get started by creating your first estimate.'
-                  : `No estimates match the "${filter}" filter.`
-                }
-              </p>
-              {filter === 'all' && (
-                <button
-                  onClick={() => setShowCreateModal(true)}
-                  className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                >
-                  <Plus className="h-4 w-4" />
-                  {isAdmin ? 'New Estimate' : 'Request Estimate'}
-                </button>
-              )}
-            </div>
-          </Card>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredEstimates.map((estimate) => (
-              <EstimateCard 
-                key={estimate.id} 
-                estimate={estimate} 
-                isAdmin={isAdmin}
-                onView={() => {
-                  setSelectedEstimate(estimate);
-                  setShowDetailModal(true);
-                }}
-              />
-            ))}
-          </div>
-        )}
+      {/* Create Estimate Modal */}
+      {showCreateModal && (
+        <CreateEstimateModal
+          isAdmin={isAdmin}
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={() => {
+            setShowCreateModal(false);
+            fetchEstimates();
+          }}
+        />
+      )}
 
-        {/* Create Estimate Modal */}
-        {showCreateModal && (
-          <CreateEstimateModal
-            isAdmin={isAdmin}
-            onClose={() => setShowCreateModal(false)}
-            onSuccess={() => {
-              setShowCreateModal(false);
-              fetchEstimates();
-            }}
-          />
-        )}
-
-        {/* Estimate Details Modal */}
-        {showDetailModal && selectedEstimate && (
-          <EstimateDetailsModal
-            estimate={selectedEstimate}
-            isAdmin={isAdmin}
-            onClose={() => {
-              setShowDetailModal(false);
-              setSelectedEstimate(null);
-            }}
-            onUpdate={fetchEstimates}
-          />
-        )}
-      </div>
+      {/* Estimate Details Modal */}
+      {showDetailModal && selectedEstimate && (
+        <EstimateDetailsModal
+          estimate={selectedEstimate}
+          isAdmin={isAdmin}
+          onClose={() => {
+            setShowDetailModal(false);
+            setSelectedEstimate(null);
+          }}
+          onUpdate={fetchEstimates}
+        />
+      )}
     </div>
   );
 };
@@ -337,44 +337,45 @@ const EstimateCard = ({
       onClick={onView}
     >
       <Card 
-        className="glass-card card-3d has-video hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+        className="glass-card card-3d hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
         videoSrc="/card.mp4"
-        videoOpacity="opacity-40" 
+        videoOpacity="opacity-50" 
         videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-        bgColor="bg-slate-500/75 dark:bg-gray-900/80"
-        borderColor="border-gray-200 dark:border-gray-700/50"
+        bgColor="bg-white dark:bg-gray-900/90"
+        borderColor="border-gray-200 dark:border-gray-700"
+        hybridMode={true}
       >
         <div className="p-6 space-y-4">
           {/* Header */}
           <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h3 className="font-semibold text-white line-clamp-1">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-black dark:text-white line-clamp-1">
                 {estimate.title}
               </h3>
               {estimate.description && (
-                <p className="text-sm text-white/80 mt-1 line-clamp-2">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
                   {estimate.description}
                 </p>
               )}
             </div>
             
-            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${statusInfo.color}`}>
+            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${statusInfo.color} ml-2 flex-shrink-0`}>
               <StatusIcon className="h-3 w-3" />
-              {statusInfo.label}
+              <span className="hidden sm:inline">{statusInfo.label}</span>
             </span>
           </div>
 
           {/* Client Info (for admin) */}
           {isAdmin && (
-            <div className="flex items-center gap-2 text-sm text-white/80">
-              <User className="h-4 w-4" />
-              <span>{estimate.profiles.first_name} {estimate.profiles.last_name}</span>
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <User className="h-4 w-4 flex-shrink-0" />
+              <span className="truncate">{estimate.profiles.first_name} {estimate.profiles.last_name}</span>
               {estimate.profiles.organization && (
                 <>
-                  <span>•</span>
-                  <div className="flex items-center gap-1">
+                  <span className="hidden sm:inline">•</span>
+                  <div className="hidden sm:flex items-center gap-1">
                     <Building className="h-3 w-3" />
-                    <span>{estimate.profiles.organization}</span>
+                    <span className="truncate">{estimate.profiles.organization}</span>
                   </div>
                 </>
               )}
@@ -383,8 +384,8 @@ const EstimateCard = ({
 
           {/* Price */}
           <div className="flex items-center gap-2 text-sm">
-            <DollarSign className="h-4 w-4 text-green-400" />
-            <span className="font-medium text-white">
+            <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+            <span className="font-medium text-black dark:text-white truncate">
               {estimate.final_price_cents 
                 ? new Intl.NumberFormat('en-US', {
                     style: 'currency',
@@ -397,15 +398,15 @@ const EstimateCard = ({
 
           {/* Timeline */}
           {estimate.timeline && (
-            <div className="flex items-center gap-2 text-sm text-white/80">
-              <Clock className="h-4 w-4" />
-              <span>{estimate.timeline}</span>
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <Clock className="h-4 w-4 flex-shrink-0" />
+              <span className="truncate">{estimate.timeline}</span>
             </div>
           )}
 
           {/* Created Date */}
-          <div className="flex items-center gap-2 text-xs text-white/70">
-            <Calendar className="h-3 w-3" />
+          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            <Calendar className="h-3 w-3 flex-shrink-0" />
             <span>
               Created {new Date(estimate.created_at).toLocaleDateString()}
             </span>
@@ -413,7 +414,7 @@ const EstimateCard = ({
 
           {/* Screenshots indicator */}
           {estimate.screenshots_urls.length > 0 && (
-            <div className="text-xs text-white/70">
+            <div className="text-xs text-gray-500 dark:text-gray-400">
               📷 {estimate.screenshots_urls.length} screenshot{estimate.screenshots_urls.length !== 1 ? 's' : ''}
             </div>
           )}

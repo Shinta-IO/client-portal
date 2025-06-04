@@ -109,21 +109,21 @@ export default function ReviewsWidget() {
       <Card 
         className="glass-card card-3d glow-effect hover:glow-effect-bright animate-pulse has-video"
         videoSrc="/card.mp4"
-        videoOpacity="opacity-50" 
+        videoOpacity="opacity-40" 
         videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-        bgColor="bg-slate-500/75 dark:bg-purple-900/20"
-        borderColor="border-purple-200 dark:border-purple-700/50"
+        bgColor="bg-white/95 dark:bg-purple-900/30"
+        borderColor="border-purple-300 dark:border-purple-600"
       >
         <CardHeader>
           <CardTitle className="font-bold text-xl gradient-text-yellow">Client Reviews</CardTitle>
         </CardHeader>
         <CardContent className="p-6">
           <div className="space-y-4">
-            <div className="h-6 bg-muted/30 rounded w-1/3"></div>
-            <div className="h-32 bg-muted/30 rounded"></div>
+            <div className="h-6 bg-gray-300/70 dark:bg-gray-700/50 rounded w-1/3"></div>
+            <div className="h-32 bg-gray-300/70 dark:bg-gray-700/50 rounded"></div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-32 bg-muted/30 rounded"></div>
+                <div key={i} className="h-32 bg-gray-300/70 dark:bg-gray-700/50 rounded"></div>
               ))}
             </div>
           </div>
@@ -137,10 +137,10 @@ export default function ReviewsWidget() {
       <Card 
         className="glass-card card-3d glow-effect hover:glow-effect-bright has-video"
         videoSrc="/card.mp4"
-        videoOpacity="opacity-50" 
+        videoOpacity="opacity-40" 
         videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-        bgColor="bg-slate-500/75 dark:bg-purple-900/20"
-        borderColor="border-purple-200 dark:border-purple-700/50"
+        bgColor="bg-white/95 dark:bg-purple-900/30"
+        borderColor="border-purple-300 dark:border-purple-600"
       >
         <CardHeader>
           <CardTitle className="font-bold text-xl gradient-text-yellow flex items-center justify-between">
@@ -157,8 +157,8 @@ export default function ReviewsWidget() {
             <div className="w-16 h-16 bg-brand-yellow/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <Star className="w-8 h-8 text-brand-yellow" />
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">No Reviews Yet</h3>
-            <p className="text-muted-foreground">Reviews from completed projects will appear here.</p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Reviews Yet</h3>
+            <p className="text-gray-700 dark:text-gray-300">Reviews from completed projects will appear here.</p>
           </div>
         </CardContent>
       </Card>
@@ -173,8 +173,8 @@ export default function ReviewsWidget() {
       videoSrc="/card.mp4"
       videoOpacity="opacity-50" 
       videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-      bgColor="bg-slate-500/75 dark:bg-purple-900/20"
-      borderColor="border-purple-200 dark:border-purple-700/50"
+      bgColor="bg-white/95 dark:bg-purple-900/30"
+      borderColor="border-purple-300 dark:border-purple-600"
     >
       <CardHeader>
         <CardTitle className="font-bold text-xl gradient-text-yellow flex items-center justify-between">
@@ -187,89 +187,89 @@ export default function ReviewsWidget() {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6 space-y-6">
-        {/* Aggregate Statistics */}
+        {/* Enhanced Aggregate Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Rating Distribution */}
+          {/* Enhanced Rating Distribution */}
           <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Distribution</h4>
+            <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wider">Distribution</h4>
             {[5, 4, 3, 2, 1].map((rating) => (
               <div key={rating} className="flex items-center gap-3 text-sm">
-                <span className="w-6 text-foreground">{rating}★</span>
-                <div className="flex-1 bg-muted/30 rounded-full h-2">
+                <span className="w-6 text-gray-900 dark:text-white font-medium">{rating}★</span>
+                <div className="flex-1 bg-gray-300 dark:bg-gray-600 rounded-full h-2">
                   <div 
                     className="bg-gradient-to-r from-brand-yellow to-brand-orange h-2 rounded-full transition-all duration-500"
                     style={{ width: `${statistics.ratingDistribution[rating as keyof typeof statistics.ratingDistribution]}%` }}
                   />
                 </div>
-                <span className="w-10 text-muted-foreground text-xs">{statistics.ratingDistribution[rating as keyof typeof statistics.ratingDistribution]}%</span>
+                <span className="w-10 text-gray-700 dark:text-gray-300 text-xs font-medium">{statistics.ratingDistribution[rating as keyof typeof statistics.ratingDistribution]}%</span>
               </div>
             ))}
           </div>
 
-          {/* Overall Rating */}
+          {/* Enhanced Overall Rating */}
           <div className="text-center">
-            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Overall</h4>
-            <div className="text-3xl font-bold text-foreground mb-2 dark:neon-text-yellow">
+            <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wider mb-3">Overall</h4>
+            <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2 dark:neon-text-yellow">
               {statistics.averageRating.toFixed(1)}
             </div>
             <StarRating rating={Math.round(statistics.averageRating)} className="justify-center mb-2" />
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-gray-700 dark:text-gray-300 font-medium">
               {statistics.totalReviews} Review{statistics.totalReviews !== 1 ? 's' : ''}
             </div>
           </div>
 
-          {/* Last Month Rating */}
+          {/* Enhanced Last Month Rating */}
           <div className="text-center">
-            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">This Month</h4>
-            <div className="text-3xl font-bold text-foreground mb-2 dark:neon-text-yellow">
+            <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wider mb-3">This Month</h4>
+            <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2 dark:neon-text-yellow">
               {statistics.lastMonthAverage > 0 ? statistics.lastMonthAverage.toFixed(1) : '-'}
             </div>
             {statistics.lastMonthAverage > 0 && (
               <StarRating rating={Math.round(statistics.lastMonthAverage)} className="justify-center mb-2" />
             )}
-            <div className="text-sm text-muted-foreground">Recent</div>
+            <div className="text-sm text-gray-700 dark:text-gray-300 font-medium">Recent</div>
           </div>
         </div>
 
-        {/* Individual Reviews */}
+        {/* Enhanced Individual Reviews */}
         <div>
-          <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Recent Reviews</h4>
+          <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wider mb-4">Recent Reviews</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 stagger-animate">
             {reviews.slice(0, 3).map((review) => (
               <div 
                 key={review.id}
-                className="glass-card p-4 hover:glow-effect-bright transition-all duration-300 fade-in"
+                className="glass-card p-4 hover:glow-effect-bright transition-all duration-300 fade-in bg-white/90 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm"
               >
                 <div className="flex flex-col items-center text-center space-y-3">
                   <UserAvatar user={review.user} />
                   <StarRating rating={review.star_rating} className="justify-center" />
-                  <p className="text-sm text-foreground leading-relaxed line-clamp-3">
+                  <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed line-clamp-3 font-medium">
                     {review.content || "Great work! Highly recommended."}
                   </p>
-                  <div className="text-sm font-medium text-foreground">
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white">
                     {review.user.first_name} {review.user.last_name}
                   </div>
                 </div>
               </div>
             ))}
             
-            {/* Show placeholder cards if less than 3 reviews */}
+            {/* Enhanced placeholder cards if less than 3 reviews */}
             {reviews.length < 3 && (
               <>
                 {[...Array(3 - reviews.length)].map((_, index) => (
                   <div 
                     key={`placeholder-${index}`}
-                    className="glass-card p-4 opacity-50"
+                    className="glass-card p-4 opacity-50 bg-white/90 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg border border-gray-300 dark:border-gray-600"
                   >
                     <div className="flex flex-col items-center text-center space-y-3">
-                      <div className="w-12 h-12 rounded-full bg-muted/30"></div>
+                      <div className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-600"></div>
                       <div className="flex justify-center">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-muted/30 text-muted/30" />
+                          <Star key={i} className="w-4 h-4 fill-gray-300 text-gray-300 dark:fill-gray-600 dark:text-gray-600" />
                         ))}
                       </div>
-                      <div className="h-12 w-full bg-muted/30 rounded"></div>
-                      <div className="h-4 w-20 bg-muted/30 rounded"></div>
+                      <div className="h-12 w-full bg-gray-300 dark:bg-gray-600 rounded"></div>
+                      <div className="h-4 w-20 bg-gray-300 dark:bg-gray-600 rounded"></div>
                     </div>
                   </div>
                 ))}

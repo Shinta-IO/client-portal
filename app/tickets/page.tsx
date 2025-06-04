@@ -320,17 +320,18 @@ export default function SupportTickets() {
           <TabsContent value="pending" className="space-y-4">
             {pendingTickets.length === 0 ? (
               <Card 
-                className="glass-card card-3d has-video"
+                className="glass-card card-3d"
                 videoSrc="/card.mp4"
-                videoOpacity="opacity-40" 
+                videoOpacity="opacity-50" 
                 videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-                bgColor="bg-slate-500/75 dark:bg-gray-900/80"
+                bgColor="bg-white dark:bg-gray-900/80"
                 borderColor="border-gray-200 dark:border-gray-700/50"
+                hybridMode={true}
               >
                 <CardContent className="text-center py-12">
-                  <HeadphonesIcon className="mx-auto h-12 w-12 text-white mb-4" />
-                  <h3 className="text-lg font-semibold text-white mb-2">No pending tickets</h3>
-                  <p className="text-white/80 mb-4">You don't have any open support tickets.</p>
+                  <HeadphonesIcon className="mx-auto h-12 w-12 text-gray-500 dark:text-gray-400 mb-4" />
+                  <h3 className="text-lg font-semibold text-black dark:text-white mb-2">No pending tickets</h3>
+                  <p className="text-gray-600 dark:text-gray-300 mb-4">You don't have any open support tickets.</p>
                   <Button onClick={() => setIsCreateDialogOpen(true)}>
                     <Plus className="w-4 h-4 mr-2" />
                     Create Your First Ticket
@@ -342,23 +343,24 @@ export default function SupportTickets() {
                 {pendingTickets.map((ticket) => (
                   <Card 
                     key={ticket.id}
-                    className="glass-card card-3d has-video hover:shadow-xl transition-all duration-300"
+                    className="glass-card card-3d hover:shadow-xl transition-all duration-300"
                     videoSrc="/card.mp4"
-                    videoOpacity="opacity-40" 
+                    videoOpacity="opacity-50" 
                     videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-                    bgColor="bg-slate-500/75 dark:bg-gray-900/80"
+                    bgColor="bg-white dark:bg-gray-900/80"
                     borderColor="border-gray-200 dark:border-gray-700/50"
+                    hybridMode={true}
                   >
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div>
-                          <CardTitle className="text-lg text-white">{ticket.title}</CardTitle>
-                          <div className="flex items-center space-x-4 text-sm text-white/80 mt-2">
+                          <CardTitle className="text-lg text-black dark:text-white">{ticket.title}</CardTitle>
+                          <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300 mt-2">
                             <div className="flex items-center space-x-1">
                               <Calendar className="w-4 h-4" />
                               <span>{formatDate(ticket.created_at)}</span>
                             </div>
-                            <Badge className="bg-yellow-100 text-yellow-800">
+                            <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200">
                               <Clock className="w-3 h-3 mr-1" />
                               Pending
                             </Badge>
@@ -367,12 +369,12 @@ export default function SupportTickets() {
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <p className="text-white/90 whitespace-pre-wrap">{ticket.description}</p>
+                      <p className="text-gray-700 dark:text-gray-200 whitespace-pre-wrap">{ticket.description}</p>
                       
                       {/* Attachments */}
                       {ticket.attachments_urls && ticket.attachments_urls.length > 0 && (
                         <div>
-                          <h4 className="font-medium mb-2 text-white">Screenshots:</h4>
+                          <h4 className="font-medium mb-2 text-black dark:text-white">Screenshots:</h4>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                             {ticket.attachments_urls.map((url, index) => (
                               <img
@@ -396,17 +398,18 @@ export default function SupportTickets() {
           <TabsContent value="resolved" className="space-y-4">
             {resolvedTickets.length === 0 ? (
               <Card 
-                className="glass-card card-3d has-video"
+                className="glass-card card-3d"
                 videoSrc="/card.mp4"
-                videoOpacity="opacity-40" 
+                videoOpacity="opacity-50" 
                 videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-                bgColor="bg-slate-500/75 dark:bg-gray-900/80"
+                bgColor="bg-white dark:bg-gray-900/80"
                 borderColor="border-gray-200 dark:border-gray-700/50"
+                hybridMode={true}
               >
                 <CardContent className="text-center py-12">
-                  <CheckCircle className="mx-auto h-12 w-12 text-white mb-4" />
-                  <h3 className="text-lg font-semibold text-white mb-2">No resolved tickets yet</h3>
-                  <p className="text-white/80">Your resolved support tickets will appear here.</p>
+                  <CheckCircle className="mx-auto h-12 w-12 text-gray-500 dark:text-gray-400 mb-4" />
+                  <h3 className="text-lg font-semibold text-black dark:text-white mb-2">No resolved tickets yet</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Your resolved support tickets will appear here.</p>
                 </CardContent>
               </Card>
             ) : (
@@ -414,23 +417,24 @@ export default function SupportTickets() {
                 {resolvedTickets.map((ticket) => (
                   <Card 
                     key={ticket.id}
-                    className="glass-card card-3d has-video hover:shadow-xl transition-all duration-300"
+                    className="glass-card card-3d hover:shadow-xl transition-all duration-300"
                     videoSrc="/card.mp4"
-                    videoOpacity="opacity-30" 
+                    videoOpacity="opacity-50" 
                     videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-                    bgColor="bg-slate-500/75 dark:bg-green-900/20"
+                    bgColor="bg-white dark:bg-green-50/80"
                     borderColor="border-green-200 dark:border-green-700/50"
+                    hybridMode={true}
                   >
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div>
-                          <CardTitle className="text-lg text-white">{ticket.title}</CardTitle>
-                          <div className="flex items-center space-x-4 text-sm text-white/80 mt-2">
+                          <CardTitle className="text-lg text-black dark:text-white">{ticket.title}</CardTitle>
+                          <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300 mt-2">
                             <div className="flex items-center space-x-1">
                               <Calendar className="w-4 h-4" />
                               <span>{formatDate(ticket.created_at)}</span>
                             </div>
-                            <Badge className="bg-green-100 text-green-800">
+                            <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200">
                               <CheckCircle className="w-3 h-3 mr-1" />
                               Resolved
                             </Badge>
@@ -447,14 +451,14 @@ export default function SupportTickets() {
                     
                     <CardContent className="space-y-4">
                       <div>
-                        <h4 className="font-medium mb-2 text-white">Your Issue:</h4>
-                        <p className="text-white/90 whitespace-pre-wrap">{ticket.description}</p>
+                        <h4 className="font-medium mb-2 text-black dark:text-white">Your Issue:</h4>
+                        <p className="text-gray-700 dark:text-gray-200 whitespace-pre-wrap">{ticket.description}</p>
                       </div>
 
                       {/* Attachments */}
                       {ticket.attachments_urls && ticket.attachments_urls.length > 0 && (
                         <div>
-                          <h4 className="font-medium mb-2 text-white">Screenshots:</h4>
+                          <h4 className="font-medium mb-2 text-black dark:text-white">Screenshots:</h4>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                             {ticket.attachments_urls.map((url, index) => (
                               <img
@@ -470,13 +474,13 @@ export default function SupportTickets() {
                       )}
                       
                       {ticket.response && (
-                        <div className="pt-4 border-t border-white/20">
-                          <h4 className="font-medium mb-2 flex items-center space-x-2 text-white">
+                        <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                          <h4 className="font-medium mb-2 flex items-center space-x-2 text-black dark:text-white">
                             <User className="w-4 h-4" />
                             <span>Admin Response:</span>
                           </h4>
-                          <div className="bg-blue-500/20 rounded-lg p-4 border-l-4 border-blue-400 backdrop-blur-sm">
-                            <p className="text-white whitespace-pre-wrap">{ticket.response}</p>
+                          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border-l-4 border-blue-400 backdrop-blur-sm">
+                            <p className="text-gray-700 dark:text-blue-100 whitespace-pre-wrap">{ticket.response}</p>
                           </div>
                         </div>
                       )}

@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { clerkClient } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs/server';
+import { createClient } from '@supabase/supabase-js';
+
+// Force dynamic rendering for this route
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+// Use service role for admin operations
+function createServiceSupabaseClient() {
+  // ... existing code ...
+}
 
 export async function GET() {
   console.log('API Route: /api/admin/users - GET request received');

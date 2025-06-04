@@ -147,11 +147,11 @@ export default function Messaging() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 space-y-6">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Messaging</h1>
-            <p className="text-gray-600">Direct communication with our team</p>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Messaging</h1>
+            <p className="text-gray-700 dark:text-gray-300 mt-2">Direct communication with our team</p>
           </div>
         </div>
         <div className="flex items-center justify-center h-64">
@@ -162,43 +162,45 @@ export default function Messaging() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6 max-w-7xl">
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Enhanced Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Messaging</h1>
-          <p className="text-gray-600">Direct communication with our team</p>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Messaging</h1>
+          <p className="text-gray-700 dark:text-gray-300 mt-2">Direct communication with our team</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-16rem)] min-h-[600px]">
-        {/* Conversations Sidebar */}
+      {/* Enhanced Chat Interface */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-10rem)]">
+        {/* Enhanced Conversations Sidebar */}
         <div className="lg:col-span-1">
-          <Card className="h-full">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg flex items-center space-x-2">
-                <MessageCircle className="w-5 h-5" />
+          <Card className="h-full border-gray-300 dark:border-gray-600 shadow-sm flex flex-col">
+            <CardHeader className="pb-4 bg-white/95 dark:bg-gray-800/90 flex-shrink-0">
+              <CardTitle className="text-lg flex items-center space-x-2 text-gray-900 dark:text-white">
+                <MessageCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <span>Contacts</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-0">
-              <div className="space-y-1">
+            <CardContent className="p-0 flex-1 overflow-hidden">
+              <div className="space-y-1 h-full overflow-y-auto pt-4">
                 {contacts.map((contact) => (
                   <div 
                     key={contact.id}
-                    className={`p-4 mx-4 mb-2 rounded-lg cursor-pointer transition-colors ${
+                    className={`p-4 mx-4 mb-2 rounded-lg cursor-pointer transition-all duration-200 ${
                       selectedContact?.id === contact.id 
-                        ? 'bg-blue-50 border border-blue-200' 
-                        : 'hover:bg-gray-50'
+                        ? 'bg-blue-100 dark:bg-blue-900/30 border border-blue-300 dark:border-blue-600' 
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-800/50'
                     }`}
                     onClick={() => setSelectedContact(contact)}
                   >
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <User className="w-5 h-5 text-blue-600" />
+                      <div className="w-10 h-10 bg-blue-200 dark:bg-blue-800/50 rounded-full flex items-center justify-center flex-shrink-0">
+                        <User className="w-5 h-5 text-blue-700 dark:text-blue-300" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm">{contact.name}</p>
-                        <p className="text-xs text-gray-500 truncate">
+                        <p className="font-semibold text-sm text-gray-900 dark:text-white">{contact.name}</p>
+                        <p className="text-xs text-gray-700 dark:text-gray-300 truncate">
                           {contact.online ? 'Online now' : 'Offline'}
                         </p>
                       </div>
@@ -206,7 +208,7 @@ export default function Messaging() {
                   </div>
                 ))}
                 {contacts.length === 0 && (
-                  <div className="p-4 text-center text-gray-500 text-sm">
+                  <div className="p-4 text-center text-gray-600 dark:text-gray-400 text-sm">
                     No contacts available
                   </div>
                 )}
@@ -215,22 +217,22 @@ export default function Messaging() {
           </Card>
         </div>
 
-        {/* Main Chat Area */}
+        {/* Enhanced Main Chat Area */}
         <div className="lg:col-span-3">
-          <Card className="h-full flex flex-col">
-            {/* Chat Header */}
-            <CardHeader className="border-b pb-4">
+          <Card className="h-full flex flex-col border-gray-300 dark:border-gray-600 shadow-sm">
+            {/* Enhanced Chat Header */}
+            <CardHeader className="border-b border-gray-300 dark:border-gray-600 pb-4 bg-white/95 dark:bg-gray-800/90">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <User className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 bg-blue-200 dark:bg-blue-800/50 rounded-full flex items-center justify-center">
+                  <User className="w-5 h-5 text-blue-700 dark:text-blue-300" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg">
+                  <CardTitle className="text-lg text-gray-900 dark:text-white">
                     {selectedContact ? selectedContact.name : 'Select a contact'}
                   </CardTitle>
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                       {selectedContact?.online ? 'Online now' : 'Offline'}
                     </p>
                   </div>
@@ -238,25 +240,25 @@ export default function Messaging() {
               </div>
             </CardHeader>
 
-            {/* Messages Area */}
-            <CardContent className="flex-1 overflow-y-auto p-4">
+            {/* Enhanced Messages Area */}
+            <CardContent className="flex-1 overflow-y-auto p-4 pt-6 bg-gray-50/50 dark:bg-gray-900/50">
               {!selectedContact ? (
                 <div className="flex flex-col items-center justify-center h-full text-center">
-                  <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6">
-                    <MessageCircle className="w-10 h-10 text-blue-500" />
+                  <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-6">
+                    <MessageCircle className="w-10 h-10 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-3">Select a contact</h3>
-                  <p className="text-gray-600 max-w-md leading-relaxed">
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Select a contact</h3>
+                  <p className="text-gray-700 dark:text-gray-300 max-w-md leading-relaxed">
                     Choose someone from your contacts to start a conversation.
                   </p>
                 </div>
               ) : filteredMessages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center">
-                  <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6">
-                    <Send className="w-10 h-10 text-blue-500" />
+                <div className="flex flex-col items-center justify-center h-full text-center pt-8">
+                  <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-6">
+                    <Send className="w-10 h-10 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-3">Start a conversation</h3>
-                  <p className="text-gray-600 max-w-md leading-relaxed">
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Start a conversation</h3>
+                  <p className="text-gray-700 dark:text-gray-300 max-w-md leading-relaxed">
                     Send a message to {selectedContact.name}. They'll be notified and can respond quickly.
                   </p>
                 </div>
@@ -271,15 +273,15 @@ export default function Messaging() {
                     >
                       <div className="flex items-start space-x-3 max-w-[75%]">
                         {message.sender_id !== user?.id && (
-                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                            <User className="w-4 h-4 text-blue-600" />
+                          <div className="w-8 h-8 bg-blue-200 dark:bg-blue-800/50 rounded-full flex items-center justify-center flex-shrink-0">
+                            <User className="w-4 h-4 text-blue-700 dark:text-blue-300" />
                           </div>
                         )}
                         <div
-                          className={`rounded-2xl px-4 py-3 ${
+                          className={`rounded-2xl px-4 py-3 shadow-sm ${
                             message.sender_id === user?.id
                               ? 'bg-blue-600 text-white'
-                              : 'bg-gray-100 text-gray-900'
+                              : 'bg-white dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600'
                           }`}
                         >
                           <p className="text-sm leading-relaxed">{message.content}</p>
@@ -288,7 +290,7 @@ export default function Messaging() {
                               className={`text-xs ${
                                 message.sender_id === user?.id
                                   ? 'text-blue-100'
-                                  : 'text-gray-500'
+                                  : 'text-gray-600 dark:text-gray-400'
                               }`}
                             >
                               {formatDate(message.created_at)}
@@ -318,25 +320,25 @@ export default function Messaging() {
               )}
             </CardContent>
 
-            {/* Message Input */}
-            <div className="border-t p-4">
+            {/* Enhanced Message Input */}
+            <div className="border-t border-gray-300 dark:border-gray-600 p-4 bg-white/95 dark:bg-gray-800/90">
               <form onSubmit={handleSendMessage} className="flex space-x-3">
                 <Input
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder={selectedContact ? `Message ${selectedContact.name}...` : "Select a contact first..."}
-                  className="flex-1"
+                  className="flex-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800/50"
                   disabled={sending || !selectedContact}
                 />
                 <Button 
                   type="submit" 
                   disabled={sending || !newMessage.trim() || !selectedContact}
-                  className="px-6"
+                  className="px-6 bg-blue-600 hover:bg-blue-700"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
               </form>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
                 Press Enter to send your message
               </p>
             </div>
@@ -344,40 +346,40 @@ export default function Messaging() {
         </div>
       </div>
 
-      {/* Info Section */}
+      {/* Enhanced Info Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
-                <MessageCircle className="w-6 h-6 text-blue-600" />
+        <Card className="border-gray-300 dark:border-gray-600 shadow-sm mt-4">
+          <CardContent className="pt-6 pb-6 flex items-center min-h-[120px]">
+            <div className="flex items-center space-x-4 w-full">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                <MessageCircle className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <h3 className="font-semibold mb-2">Direct Communication</h3>
-                <p className="text-gray-600 text-sm mb-3">
+                <h3 className="font-semibold mb-2 text-gray-900 dark:text-white mt-4">Direct Communication</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Chat directly with our support team for quick questions and real-time assistance.
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary">Real-time responses</Badge>
-                  <Badge variant="secondary">Message history</Badge>
+                  <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">Real-time responses</Badge>
+                  <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">Message history</Badge>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center flex-shrink-0">
-                <User className="w-6 h-6 text-green-600" />
+        <Card className="border-gray-300 dark:border-gray-600 shadow-sm mt-4">
+          <CardContent className="pt-6 pb-6 flex items-center min-h-[120px]">
+            <div className="flex items-center space-x-4 w-full">
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                <User className="w-6 h-6 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <h3 className="font-semibold mb-2">Need Technical Support?</h3>
-                <p className="text-gray-600 text-sm mb-3">
+                <h3 className="font-semibold mb-2 text-gray-900 dark:text-white mt-4">Need Technical Support?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   For complex technical issues or formal requests, consider using our Support Tickets system.
                 </p>
-                <Button variant="outline" size="sm" onClick={() => window.location.href = '/tickets'}>
+                <Button variant="outline" size="sm" onClick={() => window.location.href = '/tickets'} className="border-gray-300 dark:border-gray-600">
                   Create Support Ticket
                 </Button>
               </div>

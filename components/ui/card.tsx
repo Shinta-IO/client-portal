@@ -9,26 +9,30 @@ interface CardProps {
   
   // Video background options
   videoSrc?: string;
-  videoOpacity?: string; // Tailwind opacity class like "opacity-75"
-  videoBlendMode?: string; // Tailwind mix-blend class like "mix-blend-lighten dark:mix-blend-normal"
-  randomStartTime?: boolean; // Whether to start video at random time
+  videoOpacity?: string;
+  videoBlendMode?: string;
+  randomStartTime?: boolean;
   
-  // Background options
-  bgColor?: string; // Tailwind bg class like "bg-white dark:bg-gray-900/80"
+  // Background options with better defaults
+  bgColor?: string;
   
-  // Border and other styling
-  borderColor?: string; // Tailwind border class like "border-gray-200 dark:border-gray-700/50"
+  // Border and other styling  
+  borderColor?: string;
+  
+  // Performance options
+  hybridMode?: boolean;
 }
 
 export const Card: React.FC<CardProps> = ({ 
   children, 
   className = "",
   videoSrc,
-  videoOpacity = "opacity-75",
-  videoBlendMode = "mix-blend-normal dark:mix-blend-lighten",
-  randomStartTime = true, // Default to true for variety
-  bgColor = "bg-slate/90 dark:bg-gray-900/80",
-  borderColor = "border-gray-200 dark:border-gray-700/50"
+  videoOpacity = "opacity-50", // Reverted to more visible video
+  videoBlendMode = "mix-blend-multiply dark:mix-blend-lighten",
+  randomStartTime = true,
+  bgColor = "bg-white dark:bg-gray-900/90", // Clean white background for black text
+  borderColor = "border-gray-200 dark:border-gray-700",
+  hybridMode = false
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -37,37 +41,64 @@ export const Card: React.FC<CardProps> = ({
       const video = videoRef.current;
       
       const setRandomStartTime = () => {
-        // Generate a random start time between 0 and the video duration
-        // If duration isn't available yet, use a reasonable estimate (e.g., 10 seconds)
         const duration = video.duration || 10;
         const randomTime = Math.random() * duration;
         video.currentTime = randomTime;
       };
 
-      // If video metadata is already loaded, set random time immediately
       if (video.readyState >= 1) {
         setRandomStartTime();
       } else {
-        // Otherwise, wait for metadata to load
         video.addEventListener('loadedmetadata', setRandomStartTime);
         return () => video.removeEventListener('loadedmetadata', setRandomStartTime);
       }
     }
   }, [videoSrc, randomStartTime]);
 
+  // Improved mobile opacity but still more visible than before
+  const mobileVideoOpacity = "opacity-30"; // More visible for mobile
+
   return (
-    <div className={cn(`${bgColor} border ${borderColor} rounded-xl shadow-lg backdrop-blur-sm relative overflow-hidden`, className)}>
-      {videoSrc && (
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          className={`absolute inset-0 w-full h-full object-cover z-0 ${videoOpacity} ${videoBlendMode}`}
-        >
-          <source src={videoSrc} type="video/mp4" />
-        </video>
+    <div className={cn(`${bgColor} border ${borderColor} rounded-xl shadow-lg backdrop-blur-sm relative overflow-hidden transition-all duration-300`, className)}>
+      {videoSrc && !hybridMode && (
+        <>
+          {/* Mobile video - more visible than before */}
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className={`absolute inset-0 w-full h-full object-cover rounded-xl z-0 ${mobileVideoOpacity} ${videoBlendMode} sm:hidden`}
+          >
+            <source src={videoSrc} type="video/mp4" />
+          </video>
+          
+          {/* Desktop video - more prominent */}
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className={`absolute inset-0 w-full h-full object-cover rounded-xl z-0 ${videoOpacity} ${videoBlendMode} hidden sm:block`}
+          >
+            <source src={videoSrc} type="video/mp4" />
+          </video>
+        </>
+      )}
+      {videoSrc && hybridMode && (
+        <>
+          {/* Desktop only video for hybrid mode */}
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className={`absolute inset-0 w-full h-full object-cover rounded-xl z-0 ${videoOpacity} ${videoBlendMode} hidden sm:block`}
+          >
+            <source src={videoSrc} type="video/mp4" />
+          </video>
+        </>
       )}
       <div className={videoSrc ? "relative z-10" : ""}>
         {children}
@@ -82,7 +113,7 @@ export const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6", className)}
+    className={cn("flex flex-col space-y-2 p-5 sm:p-7", className)}
     {...props}
   />
 ));
@@ -94,7 +125,7 @@ export const CardTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h3
     ref={ref}
-    className={cn("text-2xl font-semibold leading-none tracking-tight", className)}
+    className={cn("text-xl sm:text-2xl font-semibold leading-tight tracking-tight text-black dark:text-white", className)}
     {...props}
   />
 ));
@@ -106,7 +137,7 @@ export const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("text-sm text-gray-600 dark:text-gray-300", className)}
     {...props}
   />
 ));
@@ -116,7 +147,7 @@ export const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+  <div ref={ref} className={cn("p-5 pt-0 sm:p-7 sm:pt-0", className)} {...props} />
 ));
 CardContent.displayName = "CardContent";
 
@@ -126,7 +157,7 @@ export const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center p-6 pt-0", className)}
+    className={cn("flex items-center p-5 pt-0 sm:p-7 sm:pt-0 mt-2", className)}
     {...props}
   />
 ));

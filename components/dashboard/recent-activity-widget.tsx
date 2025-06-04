@@ -157,10 +157,10 @@ const RecentActivityWidget = () => {
       <div className="space-y-4">
         {[...Array(5)].map((_, i) => (
           <div key={i} className="flex items-start gap-3 animate-pulse">
-            <div className="w-10 h-10 bg-white/20 dark:bg-gray-800/20 rounded-full" />
+            <div className="w-10 h-10 bg-gray-300/70 dark:bg-gray-700/50 rounded-full" />
             <div className="flex-1 space-y-2">
-              <div className="h-4 bg-white/20 dark:bg-gray-800/20 rounded w-3/4" />
-              <div className="h-3 bg-white/20 dark:bg-gray-800/20 rounded w-1/2" />
+              <div className="h-4 bg-gray-300/70 dark:bg-gray-700/50 rounded w-3/4" />
+              <div className="h-3 bg-gray-300/70 dark:bg-gray-700/50 rounded w-1/2" />
             </div>
           </div>
         ))}
@@ -174,15 +174,15 @@ const RecentActivityWidget = () => {
         <div className="mx-auto mb-6 h-16 w-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
           <TrendingUp className="h-8 w-8 text-white" />
         </div>
-        <h3 className="text-lg font-semibold text-white dark:text-white mb-2">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
           No Activity Yet
         </h3>
-        <p className="text-white/80 dark:text-gray-400 mb-6">
+        <p className="text-gray-700 dark:text-gray-300 mb-6">
           Be the first to create some activity on the platform!
         </p>
         <button
           onClick={handleRefresh}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-lg hover:from-purple-600 hover:to-pink-700 transition-all duration-200 shadow-lg"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-lg hover:from-purple-600 hover:to-pink-700 transition-all duration-200 shadow-lg font-medium"
         >
           <RefreshCw className="h-4 w-4" />
           Refresh
@@ -193,58 +193,58 @@ const RecentActivityWidget = () => {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
+      {/* Enhanced Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-white dark:text-white">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           Community Activity
         </h3>
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="p-2 rounded-lg bg-white/20 dark:bg-gray-800/20 hover:bg-white/30 dark:hover:bg-gray-800/30 transition-all duration-200 disabled:opacity-50"
+          className="p-2 rounded-lg bg-gray-200/80 dark:bg-gray-700/50 hover:bg-gray-300/80 dark:hover:bg-gray-700/70 transition-all duration-200 disabled:opacity-50 border border-gray-300 dark:border-gray-600"
         >
-          <RefreshCw className={`h-4 w-4 text-white/80 dark:text-gray-400 ${refreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`h-4 w-4 text-gray-700 dark:text-gray-300 ${refreshing ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
-      {/* Activity Feed */}
-      <div className="space-y-4 max-h-80 overflow-y-auto">
+      {/* Enhanced Activity Feed */}
+      <div className="space-y-3 max-h-80 overflow-y-auto">
         {activities.map((activity, index) => {
           const activityIcon = getActivityIcon(activity.activity_type);
           const activityColor = getActivityColor(activity.activity_type);
 
           return (
             <div key={activity.id} className="group relative">
-              {/* Activity Item */}
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-white/10 dark:bg-gray-800/10 hover:bg-white/20 dark:hover:bg-gray-800/20 transition-all duration-200 border border-white/20 dark:border-gray-700/20">
-                {/* User Avatar */}
+              {/* Enhanced Activity Item */}
+              <div className="flex items-start gap-3 p-4 rounded-lg bg-white/90 dark:bg-gray-800/60 hover:bg-gray-50/90 dark:hover:bg-gray-800/80 transition-all duration-200 border border-gray-300 dark:border-gray-600 shadow-sm hover:shadow-md">
+                {/* Enhanced User Avatar */}
                 <div className="relative">
                   {activity.user.avatar_url ? (
                     <img
                       src={activity.user.avatar_url}
                       alt={`${activity.user.first_name} ${activity.user.last_name}`}
-                      className="w-10 h-10 rounded-full object-cover border-2 border-white/30 dark:border-gray-600/30"
+                      className="w-10 h-10 rounded-full object-cover border-2 border-gray-400 dark:border-gray-500"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold border-2 border-white/30 dark:border-gray-600/30">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold border-2 border-gray-400 dark:border-gray-500">
                       {getUserInitials(activity.user.first_name, activity.user.last_name)}
                     </div>
                   )}
-                  {/* Activity Icon Badge */}
-                  <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-r ${activityColor} flex items-center justify-center text-xs border-2 border-white dark:border-gray-800`}>
+                  {/* Enhanced Activity Icon Badge */}
+                  <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-r ${activityColor} flex items-center justify-center text-xs border-2 border-white dark:border-gray-800 shadow-sm`}>
                     {activityIcon}
                   </div>
                 </div>
 
-                {/* Activity Content */}
+                {/* Enhanced Activity Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between mb-1">
                     <div className="flex-1">
-                      <p className="text-sm text-white dark:text-white">
+                      <p className="text-sm text-gray-900 dark:text-gray-100">
                         <span className="font-semibold">
                           {activity.user.first_name} {activity.user.last_name}
                         </span>
-                        <span className="ml-1">
+                        <span className="ml-1 text-gray-800 dark:text-gray-200">
                           {activity.activity_description || generateActivityDescription(
                             activity.activity_type,
                             activity.metadata
@@ -252,22 +252,22 @@ const RecentActivityWidget = () => {
                         </span>
                       </p>
                       {activity.user.organization && (
-                        <p className="text-xs text-white/60 dark:text-gray-500 mt-0.5">
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
                           at {activity.user.organization}
                         </p>
                       )}
                     </div>
-                    <span className="text-xs text-white/60 dark:text-gray-500 flex items-center gap-1 ml-2 flex-shrink-0">
+                    <span className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1 ml-2 flex-shrink-0">
                       <Clock className="h-3 w-3" />
                       {getTimeAgo(activity.created_at)}
                     </span>
                   </div>
 
-                  {/* Project Link */}
+                  {/* Enhanced Project Link */}
                   {activity.metadata?.project_id && (
                     <Link
                       href={`/projects/${activity.metadata.project_id}`}
-                      className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 transition-colors mt-1"
+                      className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors mt-2 font-medium"
                     >
                       <ExternalLink className="h-3 w-3" />
                       View Project
@@ -276,20 +276,20 @@ const RecentActivityWidget = () => {
                 </div>
               </div>
 
-              {/* Connection Line (except for last item) */}
+              {/* Enhanced Connection Line */}
               {index < activities.length - 1 && (
-                <div className="absolute left-8 top-16 w-px h-4 bg-gradient-to-b from-white/20 to-transparent dark:from-gray-600/30 dark:to-transparent" />
+                <div className="absolute left-8 top-16 w-px h-4 bg-gradient-to-b from-gray-400 to-transparent dark:from-gray-500 dark:to-transparent" />
               )}
             </div>
           );
         })}
       </div>
 
-      {/* Load More */}
+      {/* Enhanced Load More */}
       {activities.length >= 10 && (
-        <div className="pt-4 border-t border-white/20 dark:border-gray-700/30">
+        <div className="pt-4 border-t border-gray-300 dark:border-gray-600">
           <button
-            className="w-full text-sm text-white/80 dark:text-gray-400 hover:text-white dark:hover:text-white transition-colors py-2"
+            className="w-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors py-3 px-4 rounded-lg hover:bg-gray-100/80 dark:hover:bg-gray-800/50"
             onClick={() => {
               // TODO: Implement pagination
               console.log('Load more activities');
@@ -300,13 +300,13 @@ const RecentActivityWidget = () => {
         </div>
       )}
 
-      {/* Activity Stats Footer */}
-      <div className="pt-4 border-t border-white/20 dark:border-gray-700/30">
-        <div className="flex items-center justify-between text-xs text-white/60 dark:text-gray-500">
-          <span>{activities.length} recent activities</span>
-          <span className="flex items-center gap-1">
+      {/* Enhanced Activity Stats Footer */}
+      <div className="pt-4 border-t border-gray-300 dark:border-gray-600">
+        <div className="flex items-center justify-between text-xs text-gray-700 dark:text-gray-300">
+          <span className="font-medium">{activities.length} recent activities</span>
+          <span className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            Live updates
+            <span className="font-medium">Live updates</span>
           </span>
         </div>
       </div>

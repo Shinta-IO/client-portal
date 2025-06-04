@@ -47,4 +47,7 @@ Thumbs.db
 
 # Logs
 logs
-*.log 
+*.log
+
+# Reference materials (should not be included in build)
+mobile-responsive-reference/ 

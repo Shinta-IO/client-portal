@@ -60,12 +60,26 @@ const InvoicesPage = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (userId) {
       fetchInvoices();
+      checkAdminStatus();
     }
   }, [userId]);
+
+  const checkAdminStatus = async () => {
+    try {
+      const response = await fetch('/api/user/profile');
+      if (response.ok) {
+        const data = await response.json();
+        setIsAdmin(data.isAdmin || false);
+      }
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+    }
+  };
 
   const fetchInvoices = async () => {
     try {
@@ -75,6 +89,23 @@ const InvoicesPage = () => {
         const data = await response.json();
         setInvoices(data);
         console.log('📋 Invoices fetched:', data.length, 'invoices');
+        
+        // Debug status issues
+        const paidInvoices = data.filter((inv: Invoice) => inv.status === 'paid');
+        const pendingInvoices = data.filter((inv: Invoice) => inv.status === 'pending');
+        console.log('💰 Paid invoices:', paidInvoices.length);
+        console.log('⏳ Pending invoices:', pendingInvoices.length);
+        
+        // Log any invoices with payment intent but still pending
+        const pendingWithPaymentIntent = pendingInvoices.filter((inv: Invoice) => inv.stripe_payment_intent_id);
+        if (pendingWithPaymentIntent.length > 0) {
+          console.warn('⚠️ Found pending invoices with payment intents:', pendingWithPaymentIntent.map(inv => ({
+            id: inv.id,
+            stripe_payment_intent_id: inv.stripe_payment_intent_id,
+            status: inv.status,
+            paid_at: inv.paid_at
+          })));
+        }
       } else {
         console.error('Failed to fetch invoices');
       }
@@ -199,6 +230,131 @@ const InvoicesPage = () => {
     fetchInvoices();
   };
 
+  const handleViewInvoice = (invoice: Invoice) => {
+    // For now, just open a modal or navigate to invoice details
+    // TODO: Implement proper invoice view/detail page
+    console.log('Viewing invoice:', invoice);
+    alert(`Invoice Details:\n\nID: ${invoice.id}\nProject: ${invoice.estimates.title}\nAmount: ${formatCurrency(invoice.final_price_cents)}\nStatus: ${invoice.status}\nDue: ${formatDate(invoice.due_date)}${invoice.paid_at ? `\nPaid: ${formatDate(invoice.paid_at)}` : ''}`);
+  };
+
+  const handleDownloadPDF = (invoice: Invoice) => {
+    if (invoice.invoice_pdf_url) {
+      window.open(invoice.invoice_pdf_url, '_blank');
+    } else {
+      alert('PDF not available for this invoice');
+    }
+  };
+
+  // Add debugging function
+  const debugInvoiceStatus = (invoice: Invoice) => {
+    console.log('🐛 Invoice Debug:', {
+      id: invoice.id,
+      status: invoice.status,
+      paid_at: invoice.paid_at,
+      stripe_payment_intent_id: invoice.stripe_payment_intent_id,
+      created_at: invoice.created_at
+    });
+  };
+
+  const handleSyncInvoiceStatus = async () => {
+    if (!isAdmin) return;
+    
+    try {
+      setRefreshing(true);
+      const response = await fetch('/api/sync-invoice-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('🔄 Sync result:', result);
+        
+        // Refresh invoices after sync
+        setTimeout(() => {
+          fetchInvoices();
+        }, 1000);
+        
+        alert(`Sync complete!\nSynced: ${result.syncResults?.filter((r: any) => r.status === 'synced').length || 0}\nErrors: ${result.syncResults?.filter((r: any) => r.status === 'error').length || 0}`);
+      } else {
+        console.error('Sync failed:', response.status);
+        alert('Sync failed. Check console for details.');
+      }
+    } catch (error) {
+      console.error('Sync error:', error);
+      alert('Sync error. Check console for details.');
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const handleManualInvoiceCheck = async (invoice: Invoice) => {
+    if (!isAdmin) return;
+    
+    try {
+      const response = await fetch('/api/test-webhook', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'check_status',
+          invoiceId: invoice.id
+        })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('📊 Invoice status check:', result);
+        
+        const message = `Invoice Status Check:\n\nDatabase Status: ${result.invoice.status}\nStripe Status: ${result.stripe_status || 'N/A'}\nPaid At: ${result.invoice.paid_at || 'Not paid'}\nAmount: ${formatCurrency(result.invoice.amount)}`;
+        alert(message);
+      }
+    } catch (error) {
+      console.error('Status check error:', error);
+    }
+  };
+
+  const handleManualMarkPaid = async (invoice: Invoice) => {
+    if (!isAdmin) return;
+    
+    if (!confirm(`Are you sure you want to manually mark invoice ${invoice.id} as paid?`)) {
+      return;
+    }
+    
+    try {
+      const response = await fetch('/api/test-webhook', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'mark_paid',
+          invoiceId: invoice.id
+        })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Manual mark paid result:', result);
+        alert('Invoice marked as paid successfully!');
+        
+        // Refresh invoices
+        setTimeout(() => {
+          fetchInvoices();
+        }, 1000);
+      } else {
+        const error = await response.json();
+        alert(`Failed to mark as paid: ${error.error}`);
+      }
+    } catch (error) {
+      console.error('Manual mark paid error:', error);
+      alert('Error marking invoice as paid. Check console.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -208,8 +364,8 @@ const InvoicesPage = () => {
   }
 
   return (
-    <div className="space-y-8 max-w-[1600px] mx-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="p-5 md:p-8 space-y-8 max-w-[1600px] mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -238,19 +394,36 @@ const InvoicesPage = () => {
               </svg>
               {refreshing ? 'Refreshing...' : 'Refresh'}
             </button>
+            
+            {/* Admin controls */}
+            {isAdmin && (
+              <div className="flex gap-2">
+                <button
+                  onClick={handleSyncInvoiceStatus}
+                  disabled={refreshing}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                >
+                  🔄 Sync All
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Filters and Search */}
         <Card 
-          className="mb-6 glass-card card-3d has-video"
+          className="mb-6 glass-card card-3d"
           videoSrc="/card.mp4"
-          videoOpacity="opacity-50" 
+          videoOpacity="opacity-50"
           videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-          bgColor="bg-slate-500/75 dark:bg-gray-900/80"
-          borderColor="border-gray-200 dark:border-gray-700/50"
+          bgColor="bg-white dark:bg-gray-900/90"
+          borderColor="border-gray-200 dark:border-gray-700"
+          hybridMode={true}
         >
-          <CardContent className="p-6">
+          <CardHeader className="pb-0">
+            <CardTitle className="text-lg text-black dark:text-white">Filter Invoices</CardTitle>
+          </CardHeader>
+          <CardContent className="p-5 sm:p-7">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Search */}
               <div className="relative">
@@ -260,7 +433,7 @@ const InvoicesPage = () => {
                   placeholder="Search invoices..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/80 text-black dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
                 />
               </div>
 
@@ -270,7 +443,7 @@ const InvoicesPage = () => {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/80 text-black dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
                 >
                   <option value="all">All Status</option>
                   <option value="pending">Pending</option>
@@ -284,7 +457,7 @@ const InvoicesPage = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/80 text-black dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
                 >
                   <option value="created_at">Sort by Date</option>
                   <option value="due_date">Sort by Due Date</option>
@@ -293,7 +466,7 @@ const InvoicesPage = () => {
               </div>
 
               {/* Summary Stats */}
-              <div className="text-sm text-white font-medium">
+              <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">
                 Showing {filteredInvoices.length} of {invoices.length} invoices
               </div>
             </div>
@@ -303,19 +476,20 @@ const InvoicesPage = () => {
         {/* Invoices List */}
         {filteredInvoices.length === 0 ? (
           <Card 
-            className="glass-card card-3d has-video"
+            className="glass-card card-3d"
             videoSrc="/card.mp4"
-            videoOpacity="opacity-40" 
+            videoOpacity="opacity-50"
             videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-            bgColor="bg-slate-500/75 dark:bg-gray-900/80"
-            borderColor="border-gray-200 dark:border-gray-700/50"
+            bgColor="bg-white dark:bg-gray-900/90"
+            borderColor="border-gray-200 dark:border-gray-700"
+            hybridMode={true}
           >
             <CardContent className="p-12 text-center">
-              <FileText className="mx-auto h-12 w-12 text-white mb-4" />
-              <h3 className="text-lg font-medium text-white mb-2">
+              <FileText className="mx-auto h-12 w-12 text-gray-500 dark:text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-black dark:text-white mb-2">
                 No invoices found
               </h3>
-              <p className="text-white/80">
+              <p className="text-gray-600 dark:text-gray-300">
                 {searchTerm || statusFilter !== 'all' 
                   ? 'Try adjusting your search or filter criteria.'
                   : 'You don\'t have any invoices yet.'}
@@ -323,18 +497,19 @@ const InvoicesPage = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {filteredInvoices.map((invoice) => (
               <Card
                 key={invoice.id}
-                className="glass-card card-3d has-video hover:shadow-xl transition-all duration-300"
+                className="glass-card card-3d hover:shadow-xl transition-all duration-300"
                 videoSrc="/card.mp4"
-                videoOpacity="opacity-40" 
+                videoOpacity="opacity-50"
                 videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-                bgColor="bg-slate-500/75 dark:bg-gray-900/80"
-                borderColor="border-gray-200 dark:border-gray-700/50"
+                bgColor="bg-white dark:bg-gray-900/90"
+                borderColor="border-gray-200 dark:border-gray-700"
+                hybridMode={true}
               >
-                <CardContent className="p-6">
+                <CardContent className="p-6 sm:p-7">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       {/* Header */}
@@ -362,26 +537,26 @@ const InvoicesPage = () => {
                       {/* Project and Customer Info */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                          <h3 className="text-lg font-semibold text-white mb-1">
+                          <h3 className="text-lg font-semibold text-black dark:text-white mb-1">
                             {invoice.estimates.title}
                           </h3>
                           {invoice.estimates.description && (
-                            <p className="text-sm text-white/80 line-clamp-2">
+                            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
                               {invoice.estimates.description}
                             </p>
                           )}
                         </div>
                         
                         <div>
-                          <div className="flex items-center gap-2 text-sm text-white/80 mb-1">
+                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-1">
                             <User className="h-4 w-4" />
                             <span>{invoice.profiles.first_name} {invoice.profiles.last_name}</span>
                           </div>
-                          <div className="text-sm text-white/70">
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
                             {invoice.profiles.email}
                           </div>
                           {invoice.profiles.organization && (
-                            <div className="text-sm text-white/70">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
                               {invoice.profiles.organization}
                             </div>
                           )}
@@ -391,41 +566,41 @@ const InvoicesPage = () => {
                       {/* Invoice Details */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
-                          <div className="flex items-center gap-1 text-white/80 mb-1">
+                          <div className="flex items-center gap-1 text-gray-600 dark:text-gray-300 mb-1">
                             <DollarSign className="h-4 w-4" />
                             <span>Amount</span>
                           </div>
-                          <div className="font-semibold text-white">
+                          <div className="font-semibold text-black dark:text-white">
                             {formatCurrency(invoice.final_price_cents)}
                           </div>
                           {invoice.tax_rate > 0 && (
-                            <div className="text-xs text-white/70">
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
                               (includes {invoice.tax_rate}% tax)
                             </div>
                           )}
                         </div>
 
                         <div>
-                          <div className="flex items-center gap-1 text-white/80 mb-1">
+                          <div className="flex items-center gap-1 text-gray-600 dark:text-gray-300 mb-1">
                             <Calendar className="h-4 w-4" />
                             <span>Due Date</span>
                           </div>
-                          <div className="font-medium text-white">
+                          <div className="font-medium text-black dark:text-white">
                             {formatDate(invoice.due_date)}
                           </div>
                         </div>
 
                         <div>
-                          <div className="text-white/80 mb-1">Created</div>
-                          <div className="font-medium text-white">
+                          <div className="text-gray-600 dark:text-gray-300 mb-1">Created</div>
+                          <div className="font-medium text-black dark:text-white">
                             {formatDate(invoice.created_at)}
                           </div>
                         </div>
 
                         {invoice.paid_at && (
                           <div>
-                            <div className="text-white/80 mb-1">Paid</div>
-                            <div className="font-medium text-white">
+                            <div className="text-gray-600 dark:text-gray-300 mb-1">Paid</div>
+                            <div className="font-medium text-black dark:text-white">
                               {formatDate(invoice.paid_at)}
                             </div>
                           </div>
@@ -445,16 +620,36 @@ const InvoicesPage = () => {
                         </button>
                       )}
                       
-                      <button className="inline-flex items-center gap-2 px-4 py-2 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-colors text-sm">
+                      <button className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-black dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm" onClick={() => handleViewInvoice(invoice)}>
                         <Eye className="h-4 w-4" />
                         View
                       </button>
                       
                       {invoice.invoice_pdf_url && (
-                        <button className="inline-flex items-center gap-2 px-4 py-2 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-colors text-sm">
+                        <button className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-black dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm" onClick={() => handleDownloadPDF(invoice)}>
                           <Download className="h-4 w-4" />
                           PDF
                         </button>
+                      )}
+                      
+                      {/* Admin debug controls */}
+                      {isAdmin && (
+                        <div className="flex flex-col gap-1 mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                          <button 
+                            onClick={() => handleManualInvoiceCheck(invoice)}
+                            className="inline-flex items-center gap-2 px-3 py-1 border border-blue-400/50 text-blue-600 dark:text-blue-300 rounded text-xs hover:bg-blue-50 dark:hover:bg-blue-500/20 transition-colors"
+                          >
+                            🔍 Check Status
+                          </button>
+                          {invoice.status === 'pending' && invoice.stripe_payment_intent_id && (
+                            <button 
+                              onClick={() => handleManualMarkPaid(invoice)}
+                              className="inline-flex items-center gap-2 px-3 py-1 border border-green-400/50 text-green-600 dark:text-green-300 rounded text-xs hover:bg-green-50 dark:hover:bg-green-500/20 transition-colors"
+                            >
+                              ✅ Mark Paid
+                            </button>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>

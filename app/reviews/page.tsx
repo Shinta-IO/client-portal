@@ -64,14 +64,14 @@ const StarRating = ({ rating, className = "" }: { rating: number; className?: st
 const RatingBar = ({ rating, percentage }: { rating: number; percentage: number }) => {
   return (
     <div className="flex items-center gap-3 text-sm">
-      <span className="w-6 text-white/80">{rating}★</span>
-      <div className="flex-1 bg-white/20 rounded-full h-2">
+      <span className="w-6 text-gray-900 dark:text-white/80 font-medium">{rating}★</span>
+      <div className="flex-1 bg-gray-300 dark:bg-gray-600 rounded-full h-2">
         <div 
-          className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
+          className="bg-gradient-to-r from-brand-yellow to-brand-orange h-2 rounded-full transition-all duration-500"
           style={{ width: `${percentage}%` }}
         />
       </div>
-      <span className="w-10 text-white/80 text-xs">{percentage}%</span>
+      <span className="w-10 text-gray-700 dark:text-gray-300 text-xs font-medium">{percentage}%</span>
     </div>
   );
 };
@@ -84,7 +84,7 @@ const UserAvatar = ({ user }: { user: Review['user'] }) => {
       <img
         src={user.avatar_url}
         alt={`${user.first_name} ${user.last_name}`}
-        className="w-12 h-12 rounded-full object-cover"
+        className="w-12 h-12 mt-4 rounded-full object-cover"
       />
     );
   }
@@ -163,9 +163,9 @@ export default function ReviewsPage() {
   const { reviews, statistics } = reviewsData;
 
   return (
-    <div className="space-y-6 max-w-[1600px] mx-auto">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             Client Reviews
@@ -176,7 +176,7 @@ export default function ReviewsPage() {
         </div>
         <Button
           onClick={() => setIsCreateFormOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
         >
           <Plus className="w-4 h-4 mr-2" />
           Create Review
@@ -185,21 +185,21 @@ export default function ReviewsPage() {
 
       {/* Statistics Overview */}
       <Card 
-        className="hover:shadow-xl transition-all duration-300"
+        className="hover:shadow-xl transition-all duration-300 glow-effect-secondary hover:glow-effect-secondary-bright"
         videoSrc="/card.mp4"
         videoOpacity="opacity-50" 
         videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-        bgColor="bg-slate-500/75 dark:bg-blue-900/20"
-        borderColor="border-blue-200 dark:border-blue-700/50"
+        bgColor="bg-white/95 dark:bg-blue-900/30"
+        borderColor="border-blue-300 dark:border-blue-600"
       >
-        <CardHeader>
-          <CardTitle className="text-white">Overview</CardTitle>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-gray-900 dark:text-white text-lg md:text-xl gradient-text">Overview</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
             {/* Rating Distribution */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white">Rating Distribution</h3>
+              <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">Rating Distribution</h3>
               <div className="space-y-3">
                 {[5, 4, 3, 2, 1].map((rating) => (
                   <RatingBar 
@@ -213,26 +213,26 @@ export default function ReviewsPage() {
 
             {/* Overall Rating */}
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-white mb-4">Overall Rating</h3>
-              <div className="text-4xl font-bold text-white mb-3">
+              <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-4">Overall Rating</h3>
+              <div className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 dark:neon-text-secondary">
                 {statistics.averageRating.toFixed(1)}
               </div>
               <StarRating rating={Math.round(statistics.averageRating)} className="justify-center mb-3" />
-              <div className="text-sm text-white/80">
+              <div className="text-xs md:text-sm text-gray-700 dark:text-white/80">
                 Based on {statistics.totalReviews} review{statistics.totalReviews !== 1 ? 's' : ''}
               </div>
             </div>
 
             {/* Recent Performance */}
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-white mb-4">Last Month</h3>
-              <div className="text-4xl font-bold text-white mb-3">
+              <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-4">Last Month</h3>
+              <div className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 dark:neon-text-secondary">
                 {statistics.lastMonthAverage > 0 ? statistics.lastMonthAverage.toFixed(1) : '-'}
               </div>
               {statistics.lastMonthAverage > 0 && (
                 <StarRating rating={Math.round(statistics.lastMonthAverage)} className="justify-center mb-3" />
               )}
-              <div className="text-sm text-white/80">
+              <div className="text-xs md:text-sm text-gray-700 dark:text-white/80">
                 {statistics.lastMonthAverage > 0 ? 'Recent rating' : 'No recent reviews'}
               </div>
             </div>
@@ -242,27 +242,28 @@ export default function ReviewsPage() {
 
       {/* Filters */}
       <Card 
-        className="hover:shadow-xl transition-all duration-300"
+        className="hover:shadow-xl transition-all duration-300 glow-effect hover:glow-effect-bright"
         videoSrc="/card.mp4"
         videoOpacity="opacity-40" 
         videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-        bgColor="bg-slate-500/75 dark:bg-gray-900/20"
-        borderColor="border-gray-200 dark:border-gray-700/50"
+        bgColor="bg-white/95 dark:bg-gray-900/80"
+        borderColor="border-gray-300 dark:border-gray-700"
+        hybridMode={true}
       >
-        <CardContent className="p-6">
-          <div className="flex items-center gap-4">
+        <CardContent className="p-4 md:p-6 mt-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-white/60" />
-              <span className="text-sm font-medium text-white">Filter by rating:</span>
+              <Filter className="w-4 h-4 text-gray-600 dark:text-white/60" />
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Filter by rating:</span>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 variant={filterRating === null ? "default" : "outline"}
                 size="sm"
                 onClick={() => setFilterRating(null)}
                 className={filterRating === null 
-                  ? "bg-white text-gray-900 hover:bg-white/90" 
-                  : "border-white/30 text-white hover:bg-white/10"
+                  ? "bg-yellow-400 text-gray-900 hover:bg-yellow-500" 
+                  : "border-gray-300 dark:border-white/30 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10"
                 }
               >
                 All
@@ -274,8 +275,8 @@ export default function ReviewsPage() {
                   size="sm"
                   onClick={() => setFilterRating(rating)}
                   className={filterRating === rating 
-                    ? "bg-white text-gray-900 hover:bg-white/90" 
-                    : "border-white/30 text-white hover:bg-white/10"
+                    ? "bg-yellow-400 text-gray-900 hover:bg-yellow-500" 
+                    : "border-gray-300 dark:border-white/30 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10"
                   }
                 >
                   {rating}★
@@ -289,20 +290,23 @@ export default function ReviewsPage() {
       {/* Reviews Grid */}
       {filteredReviews.length === 0 ? (
         <Card 
-          className="hover:shadow-xl transition-all duration-300"
+          className="hover:shadow-xl transition-all duration-300 glow-effect-yellow hover:glow-effect-yellow-bright"
           videoSrc="/card.mp4"
           videoOpacity="opacity-50" 
           videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-          bgColor="bg-slate-500/75 dark:bg-purple-900/20"
-          borderColor="border-purple-200 dark:border-purple-700/50"
+          bgColor="bg-white/95 dark:bg-purple-900/30"
+          borderColor="border-purple-300 dark:border-purple-600"
+          hybridMode={true}
         >
-          <CardContent className="py-12">
+          <CardContent className="py-8 md:py-12">
             <div className="text-center">
-              <Star className="w-16 h-16 text-white/60 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-white mb-2">
+              <div className="w-16 h-16 bg-brand-yellow/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Star className="w-8 h-8 text-brand-yellow" />
+              </div>
+              <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 {filterRating ? `No ${filterRating}-star reviews` : 'No Reviews Yet'}
               </h3>
-              <p className="text-white/80">
+              <p className="text-sm md:text-base text-gray-700 dark:text-white/80">
                 {filterRating 
                   ? `Try selecting a different rating filter.`
                   : 'Reviews from completed projects will appear here.'
@@ -312,18 +316,18 @@ export default function ReviewsPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {filteredReviews.map((review) => (
-            <Card key={review.id} className="bg-white border border-gray-200 hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex flex-col items-center text-center space-y-4">
+            <Card key={review.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
                   <UserAvatar user={review.user} />
                   <div className="space-y-2">
                     <StarRating rating={review.star_rating} className="justify-center" />
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {review.user.first_name} {review.user.last_name}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
                       {new Date(review.created_at).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
@@ -332,15 +336,15 @@ export default function ReviewsPage() {
                     </div>
                   </div>
                   {review.content && (
-                    <p className="text-sm text-gray-700 leading-relaxed">
+                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                       "{review.content}"
                     </p>
                   )}
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
                     Project: {review.project.title}
                   </div>
                   {review.would_recommend && (
-                    <div className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
+                    <div className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
                       Would recommend
                     </div>
                   )}
@@ -353,16 +357,17 @@ export default function ReviewsPage() {
 
       {/* Summary Footer */}
       <Card 
-        className="hover:shadow-xl transition-all duration-300"
+        className="hover:shadow-xl transition-all duration-300 glow-effect hover:glow-effect-bright"
         videoSrc="/card.mp4"
         videoOpacity="opacity-30" 
         videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-        bgColor="bg-slate-500/75 dark:bg-gray-900/20"
-        borderColor="border-gray-200 dark:border-gray-700/50"
+        bgColor="bg-white/95 dark:bg-gray-900/80"
+        borderColor="border-gray-300 dark:border-gray-700"
+        hybridMode={true}
       >
-        <CardContent className="py-8">
-          <div className="text-center">
-            <p className="text-white/80">
+        <CardContent className="py-6 md:py-8">
+          <div className="text-center pt-3 md:pt-5">
+            <p className="text-sm md:text-base text-gray-700 dark:text-white/80">
               Showing {filteredReviews.length} of {reviews.length} review{reviews.length !== 1 ? 's' : ''}
             </p>
           </div>

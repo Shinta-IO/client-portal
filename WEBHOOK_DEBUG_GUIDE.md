@@ -1,234 +1,184 @@
-# 🐛 Webhook Debug Guide - Invoice Status Not Updating
+# 🐛 Webhook Debug Guide - Invoice Status Updates
 
-## 🔍 **The Problem**
-Stripe payments are succeeding, but invoice status remains "pending" instead of updating to "paid". This means the webhook isn't processing the `payment_intent.succeeded` event properly.
+## 🔍 **Current Issue**
+Invoices paid through Stripe are not automatically updating to "paid" status. The sync function works manually, but the webhook isn't being triggered automatically.
 
-## 🧪 **Quick Debug Steps**
+## ✅ **What's Working**
+- ✅ Payment processing completes successfully
+- ✅ Payment intents are created with correct metadata
+- ✅ Manual sync function updates status correctly
+- ✅ Webhook endpoint exists and has correct logic
 
-### **1. Test Webhook Manually (Admin Required)**
+## 🧪 **Testing Steps**
 
-```bash
-# Test if webhook processing works manually
-curl -X POST http://localhost:3000/api/test-webhook \
-  -H "Content-Type: application/json" \
-  -d '{
-    "invoiceId": "YOUR_INVOICE_ID",
-    "action": "mark_paid"
-  }'
+### **1. Test Webhook Connectivity**
 
-# Check invoice status
-curl -X POST http://localhost:3000/api/test-webhook \
-  -H "Content-Type: application/json" \
-  -d '{
-    "invoiceId": "YOUR_INVOICE_ID", 
-    "action": "check_status"
-  }'
-
-# List recent invoices
-curl -X POST http://localhost:3000/api/test-webhook \
-  -H "Content-Type: application/json" \
-  -d '{
-    "action": "list_recent"
-  }'
-```
-
-### **2. Check Environment Variables**
-
-Ensure these are set in your `.env.local` file:
-
-```env
-# Stripe Configuration (REQUIRED)
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=https://...
-SUPABASE_SERVICE_ROLE_KEY=...
-```
-
-### **3. Check Console Logs**
-
-After making a payment, look for these logs in your Next.js console:
-
-```
-✅ Expected Success Flow:
-🔄 Webhook received - Signature present: true
-✅ Webhook signature verified successfully  
-🎯 Stripe webhook event: payment_intent.succeeded ID: pi_xxx
-💰 Payment succeeded for Payment Intent: pi_xxx
-🔍 Looking for invoice with payment intent ID: pi_xxx
-📋 Found invoice: { id: 'xxx', status: 'pending', ... }
-🔄 Updating invoice status to paid...
-✅ Invoice status updated to paid successfully!
-🚀 Creating project for invoice: xxx
-✅ Project created successfully: xxx
-📝 Recording activity...
-✅ Activity recorded successfully
-🎉 Invoice payment processed successfully: xxx
-```
-
-```
-❌ Common Error Patterns:
-❌ Missing stripe-signature header
-❌ Webhook signature verification failed
-❌ Invoice not found for payment intent: pi_xxx
-❌ Error updating invoice status: { ... }
-```
-
-## 🔧 **Common Issues & Solutions**
-
-### **Issue 1: Webhook Not Configured in Stripe Dashboard**
-
-**Symptoms:**
-- No webhook logs appear in console
-- Payments succeed but no backend processing
-
-**Solution:**
-1. Go to [Stripe Dashboard → Webhooks](https://dashboard.stripe.com/webhooks)
-2. Click "Add endpoint"
-3. Enter URL: `https://your-domain.com/api/invoices/webhook` (or ngrok for local)
-4. Select events: `payment_intent.succeeded`, `payment_intent.payment_failed`
-5. Copy the webhook secret to your environment
-
-### **Issue 2: Local Development Webhook Setup**
-
-**For local testing, use ngrok:**
+First, verify your webhook endpoint is accessible:
 
 ```bash
-# Install ngrok
-npm install -g ngrok
+# Test 1: Simple GET request
+curl https://your-domain.com/api/webhook-test
 
-# Start your Next.js app
-npm run dev
-
-# In another terminal, expose localhost:3000
-ngrok http 3000
-
-# Use the ngrok URL in Stripe webhook config:
-# https://xxx.ngrok.io/api/invoices/webhook
+# Test 2: POST request (simulating webhook)
+curl -X POST https://your-domain.com/api/webhook-test \
+  -H "Content-Type: application/json" \
+  -d '{"test": "webhook connectivity"}'
 ```
 
-### **Issue 3: Wrong Webhook Secret**
+### **2. Check Stripe Dashboard Configuration**
 
-**Symptoms:**
-- `❌ Webhook signature verification failed`
+Go to [Stripe Dashboard → Webhooks](https://dashboard.stripe.com/webhooks):
 
-**Solution:**
-1. Go to Stripe Dashboard → Webhooks → Your webhook
-2. Click "Reveal" next to "Signing secret"
-3. Copy the `whsec_...` value to `STRIPE_WEBHOOK_SECRET`
+1. **Verify webhook exists** with URL: `https://your-domain.com/api/invoices/webhook`
+2. **Check events are selected:**
+   - `payment_intent.succeeded` ✅ (REQUIRED)
+   - `payment_intent.canceled` ✅ (Optional)
+   - `payment_intent.payment_failed` ✅ (Optional)
+3. **Check webhook status:** Should be "Enabled"
+4. **Check recent deliveries:** Look for failed attempts
 
-### **Issue 4: Database Connection Issues**
+### **3. Test Stripe Webhook Locally**
 
-**Symptoms:**
-- `❌ Error finding invoice` or `❌ Error updating invoice status`
-
-**Solution:**
-1. Verify `SUPABASE_SERVICE_ROLE_KEY` (not the anon key!)
-2. Check Supabase logs for RLS policy errors
-3. Ensure invoice table has proper permissions
-
-### **Issue 5: Payment Intent ID Mismatch**
-
-**Symptoms:**
-- `❌ Invoice not found for payment intent: pi_xxx`
-- `📊 Recent invoices in database:` shows invoices without matching payment intent
-
-**Solution:**
-```sql
--- Check if payment intent IDs are being stored correctly
-SELECT id, stripe_payment_intent_id, status, created_at 
-FROM invoices 
-ORDER BY created_at DESC 
-LIMIT 10;
-
--- Look for NULL or incorrect payment intent IDs
-```
-
-## 🚀 **Testing the Fix**
-
-### **Complete Test Flow:**
-
-1. **Start the app with logging:**
-   ```bash
-   npm run dev
-   # Watch console for webhook logs
-   ```
-
-2. **Create a test payment:**
-   - Go to `/invoices`
-   - Click "Pay Now" on a pending invoice
-   - Use test card: `4242 4242 4242 4242`
-   - Complete payment
-
-3. **Verify webhook processing:**
-   - Check console for success logs
-   - Refresh invoice page - status should be "paid"
-   - Check if project was created automatically
-
-4. **If still not working, manually test:**
-   ```bash
-   # Use test endpoint to manually mark invoice as paid
-   curl -X POST http://localhost:3000/api/test-webhook \
-     -H "Content-Type: application/json" \
-     -d '{"invoiceId": "INVOICE_ID", "action": "mark_paid"}'
-   ```
-
-## 📋 **Webhook Event Testing**
-
-### **Test with Stripe CLI (Alternative to ngrok):**
+If testing locally, use Stripe CLI:
 
 ```bash
-# Install Stripe CLI
-# Download from: https://stripe.com/docs/stripe-cli
-
-# Login to Stripe
-stripe login
-
-# Forward webhooks to local endpoint
+# Install Stripe CLI first, then:
 stripe listen --forward-to localhost:3000/api/invoices/webhook
 
-# The CLI will show you the webhook secret - add it to .env.local
-# Test payments will now trigger your local webhook
+# In another terminal, trigger a test event:
+stripe trigger payment_intent.succeeded
 ```
 
-## ✅ **When It's Working Correctly**
+### **4. Check Environment Variables**
 
-You should see:
-- ✅ Console logs showing successful webhook processing
-- ✅ Invoice status changes from "pending" → "paid" immediately
-- ✅ `paid_at` timestamp is set
-- ✅ Project is automatically created
-- ✅ Activity feed shows payment events
+Ensure these are set in production:
 
-## 🆘 **Still Not Working?**
+```env
+STRIPE_SECRET_KEY=sk_live_... (or sk_test_...)
+STRIPE_WEBHOOK_SECRET=whsec_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_... (or pk_test_...)
+```
 
-If you've tried everything above:
+## 🔧 **Quick Fixes**
 
-1. **Check Stripe logs:**
-   - Go to Stripe Dashboard → Logs
-   - Look for webhook delivery failures
+### **Fix 1: Manual Invoice Status Sync**
 
-2. **Use manual test endpoint:**
-   ```bash
-   # Mark invoice as paid manually (admin only)
-   POST /api/test-webhook
-   {
-     "invoiceId": "your-invoice-id",
-     "action": "mark_paid"
-   }
-   ```
+If you need immediate fix, use the sync endpoint:
 
-3. **Check database directly:**
-   ```sql
-   -- Verify invoice exists and has correct payment intent ID
-   SELECT * FROM invoices WHERE id = 'your-invoice-id';
-   
-   -- Manually update if needed (temporary fix)
-   UPDATE invoices 
-   SET status = 'paid', paid_at = NOW() 
-   WHERE id = 'your-invoice-id';
-   ```
+```bash
+curl -X POST https://your-domain.com/api/sync-invoice-status \
+  -H "Content-Type: application/json"
+```
 
-The webhook processing should work reliably once the Stripe webhook endpoint is properly configured and the environment variables are set correctly. 
+### **Fix 2: Manual Invoice Update (Admin Only)**
+
+For individual invoices, use the test webhook:
+
+```bash
+curl -X POST https://your-domain.com/api/test-webhook \
+  -H "Content-Type: application/json" \
+  -d '{"invoice_id": "your-invoice-id"}'
+```
+
+## 🚨 **Common Issues & Solutions**
+
+### **Issue 1: Webhook URL Not Accessible**
+**Solution:** Ensure your domain is live and the webhook endpoint returns 200 status
+
+### **Issue 2: Wrong Webhook Secret**
+**Solution:** Copy the webhook secret from Stripe Dashboard → Your Webhook → Signing Secret
+
+### **Issue 3: Payment Intent Not Linked to Invoice**
+**Solution:** Check if `stripe_payment_intent_id` is correctly saved during invoice creation
+
+### **Issue 4: Multiple Payment Intents**
+**Solution:** Ensure only one payment intent is created per invoice
+
+## 📋 **Debugging Checklist**
+
+- [ ] Webhook endpoint is accessible via browser/curl
+- [ ] Stripe webhook is configured with correct URL
+- [ ] `payment_intent.succeeded` event is selected
+- [ ] Webhook secret is correctly set in environment
+- [ ] Payment intents include invoice metadata
+- [ ] Database has correct `stripe_payment_intent_id` values
+- [ ] No firewall blocking Stripe webhooks
+
+## 🛠 **Advanced Debugging**
+
+### **Check Payment Intent Metadata**
+
+In Stripe Dashboard, find a payment intent and verify it has:
+```json
+{
+  "metadata": {
+    "invoice_id": "abc123",
+    "user_id": "user_abc123",
+    "estimate_id": "est_123"
+  }
+}
+```
+
+### **Check Database Consistency**
+
+Run this query to check for mismatched data:
+```sql
+SELECT 
+  id,
+  status,
+  stripe_payment_intent_id,
+  paid_at,
+  created_at
+FROM invoices 
+WHERE status = 'pending' 
+  AND stripe_payment_intent_id IS NOT NULL
+ORDER BY created_at DESC;
+```
+
+### **Monitor Webhook Logs**
+
+Check your application logs for webhook events:
+- Look for `🔄 Webhook received` messages
+- Check if `payment_intent.succeeded` events are being processed
+- Verify no errors in the webhook handler
+
+## 🎯 **Expected Webhook Flow**
+
+1. **User pays invoice** → Stripe processes payment
+2. **Payment succeeds** → Stripe sends `payment_intent.succeeded` event
+3. **Webhook receives event** → Finds invoice by `stripe_payment_intent_id`
+4. **Updates database** → Sets status to 'paid' and `paid_at` timestamp
+5. **Creates project** → Automatically creates project from estimate
+6. **Sends email** → Confirms payment to customer
+
+## 🚀 **Production Setup Commands**
+
+```bash
+# 1. Deploy your app
+vercel deploy --prod
+
+# 2. Test webhook endpoint
+curl https://your-domain.com/api/webhook-test
+
+# 3. Add webhook in Stripe Dashboard
+# URL: https://your-domain.com/api/invoices/webhook
+# Events: payment_intent.succeeded
+
+# 4. Test with real payment or Stripe CLI
+stripe trigger payment_intent.succeeded
+
+# 5. Verify invoice status updates
+curl https://your-domain.com/api/invoices
+```
+
+## 🔄 **Immediate Action Items**
+
+1. **Verify webhook URL** in Stripe Dashboard
+2. **Check recent webhook deliveries** for errors
+3. **Test webhook connectivity** with curl
+4. **Run manual sync** to fix existing paid invoices
+5. **Monitor logs** during next payment test
+
+---
+
+**Need Help?** Check the webhook logs in your application dashboard or contact support with the specific error messages. 

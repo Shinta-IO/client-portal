@@ -344,7 +344,7 @@
 }
 
 .glass-card {
-  @apply bg-white/80 dark:bg-card/80 backdrop-blur-md border border-white/20 dark:border-white/10;
+  @apply bg-white/95 dark:bg-card/90 backdrop-blur-md border border-gray-300/80 dark:border-gray-600/60 shadow-sm;
 }
 
 .gradient-border {
@@ -507,28 +507,121 @@
   padding-top: env(safe-area-inset-top, 0);
 }
 
-/* Button animations */
-.btn-hover-effect {
-  position: relative;
-  overflow: hidden;
+/* Clerk UserButton Dark Mode Fixes */
+.dark .cl-userButtonPopoverCard {
+  background-color: rgb(17 24 39) !important; /* gray-900 */
+  border-color: rgb(55 65 81) !important; /* gray-700 */
+  color: rgb(243 244 246) !important; /* gray-100 */
 }
 
-.btn-hover-effect::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.6s ease, height 0.6s ease;
+.dark .cl-userButtonPopoverActions {
+  background-color: rgb(17 24 39) !important; /* gray-900 */
 }
 
-.btn-hover-effect:hover::after {
-  width: 300%;
-  height: 300%;
+.dark .cl-userButtonPopover {
+  background-color: rgb(17 24 39) !important; /* gray-900 */
+  border-color: rgb(55 65 81) !important; /* gray-700 */
+}
+
+.dark .cl-userButtonPopoverActionButton {
+  color: rgb(243 244 246) !important; /* gray-100 */
+}
+
+.dark .cl-userButtonPopoverActionButton:hover {
+  background-color: rgb(31 41 55) !important; /* gray-800 */
+}
+
+.dark .cl-userButtonPopoverActionButtonText {
+  color: rgb(243 244 246) !important; /* gray-100 */
+}
+
+.dark .cl-userButtonPopoverActionButtonIcon {
+  color: rgb(209 213 219) !important; /* gray-300 */
+}
+
+/* User Preview Text - Dark Mode */
+.dark .cl-userPreviewTextContainer {
+  color: rgb(17 24 39) !important; /* Dark text for better contrast */
+}
+
+.dark .cl-userPreviewMainIdentifier {
+  color: rgb(17 24 39) !important; /* Dark text for name */
+  font-weight: 600 !important;
+}
+
+.dark .cl-userPreviewSecondaryIdentifier {
+  color: rgb(55 65 81) !important; /* Darker gray for email */
+  font-weight: 500 !important;
+}
+
+/* Light mode ensure proper contrast */
+.cl-userButtonPopoverCard {
+  background-color: rgb(255 255 255) !important; /* white */
+  border-color: rgb(209 213 219) !important; /* gray-300 */
+  color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+.cl-userButtonPopoverActionButton {
+  color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+.cl-userButtonPopoverActionButtonText {
+  color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+.cl-userButtonPopoverActionButtonIcon {
+  color: rgb(75 85 99) !important; /* gray-600 */
+}
+
+/* User Preview Text - Light Mode */
+.cl-userPreviewTextContainer {
+  color: rgb(17 24 39) !important; /* Dark text */
+}
+
+.cl-userPreviewMainIdentifier {
+  color: rgb(17 24 39) !important; /* Dark text for name */
+  font-weight: 600 !important;
+}
+
+.cl-userPreviewSecondaryIdentifier {
+  color: rgb(75 85 99) !important; /* Gray text for email */
+  font-weight: 500 !important;
+}
+
+/* Notification badge animation */
+.notification-badge {
+  animation: notification-pulse 2s infinite;
+  padding: 2px;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes notification-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 209, 102, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(255, 209, 102, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 209, 102, 0);
+  }
+}
+
+/* Additional Clerk UserButton improvements */
+.dark .cl-userButtonPopover * {
+  color: rgb(243 244 246) !important; /* Ensure all text is light in dark mode */
+}
+
+.cl-userButtonPopover * {
+  color: rgb(17 24 39) !important; /* Ensure all text is dark in light mode */
+}
+
+.dark .cl-userButtonPopover .cl-userButtonPopover * {
+  color: rgb(243 244 246) !important;
 }
 
 /* Notification badge animation */
@@ -886,5 +979,65 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Accessibility Text Color Utilities */
+@layer utilities {
+  /* Text color utilities for consistent accessibility */
+  .text-primary {
+    @apply text-black dark:text-white;
+  }
+  
+  .text-secondary {
+    @apply text-gray-700 dark:text-gray-200;
+  }
+  
+  .text-muted {
+    @apply text-gray-600 dark:text-gray-400;
+  }
+  
+  .text-subtle {
+    @apply text-gray-500 dark:text-gray-500;
+  }
+
+  /* Only use white text when absolutely necessary (colored backgrounds) */
+  .text-on-color {
+    @apply text-white dark:text-white;
+  }
+
+  /* Better video background handling */
+  .video-card {
+    position: relative;
+  }
+  
+  .video-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  .dark .video-card::before {
+    background: rgba(0, 0, 0, 0.7);
+  }
+  
+  .video-card > * {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+/* Enhanced focus states for accessibility */
+@layer utilities {
+  .focus-visible\:ring-offset-white:focus-visible {
+    --tw-ring-offset-color: white;
+  }
+  
+  .dark .focus-visible\:ring-offset-white:focus-visible {
+    --tw-ring-offset-color: rgb(17 24 39);
   }
 } 

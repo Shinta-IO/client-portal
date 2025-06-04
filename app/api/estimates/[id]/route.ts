@@ -232,6 +232,7 @@ export async function PUT(
       try {
         let activityType = '';
         let activityDescription = '';
+        let activityUserId = estimate.user_id; // Default to estimate owner for user actions
 
         switch (status) {
           case 'pending':
@@ -239,8 +240,25 @@ export async function PUT(
             activityDescription = `Submitted estimate "${estimate.title}" for review`;
             break;
           case 'finalized':
-            activityType = 'estimate_finalized';
-            activityDescription = `Finalized estimate "${estimate.title}"`;
+            if (isAdmin) {
+              // Admin finalized the estimate - get admin's profile for proper attribution
+              const { data: adminProfile } = await client
+                .from('profiles')
+                .select('first_name, last_name')
+                .eq('id', userId)
+                .single();
+
+              const adminName = adminProfile ? 
+                `${adminProfile.first_name} ${adminProfile.last_name}` : 
+                'Admin';
+
+              activityType = 'estimate_finalized';
+              activityDescription = `received a finalized estimate from ${adminName} for "${estimate.title}"`;
+              // Keep activityUserId as estimate.user_id so it appears in the customer's feed
+            } else {
+              activityType = 'estimate_finalized';
+              activityDescription = `Finalized estimate "${estimate.title}"`;
+            }
             break;
           case 'approved':
             activityType = 'estimate_approved';
@@ -252,10 +270,14 @@ export async function PUT(
           await client
             .from('recent_activity')
             .insert({
-              user_id: estimate.user_id,
+              user_id: activityUserId,
               activity_type: activityType,
               activity_description: activityDescription,
-              metadata: { estimate_id: estimate.id }
+              metadata: { 
+                estimate_id: estimate.id,
+                admin_user_id: isAdmin ? userId : null,
+                performed_by_admin: isAdmin
+              }
             });
         }
       } catch (activityError) {

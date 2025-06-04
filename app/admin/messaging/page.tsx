@@ -284,7 +284,7 @@ export default function AdminMessaging() {
 
   if (!isAdmin) {
     return (
-      <div className="container mx-auto px-4 py-8 space-y-6">
+      <div className="space-y-6">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
@@ -294,11 +294,11 @@ export default function AdminMessaging() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 space-y-6">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Admin Messages</h1>
-            <p className="text-gray-600">Manage user conversations and support requests</p>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Admin Messages</h1>
+            <p className="text-gray-700 dark:text-gray-300 mt-2">Manage user conversations and support requests</p>
           </div>
         </div>
         <div className="flex items-center justify-center h-64">
@@ -309,13 +309,14 @@ export default function AdminMessaging() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6 max-w-7xl">
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Enhanced Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Admin Messages</h1>
-          <p className="text-gray-600">Manage user conversations and support requests</p>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Admin Messages</h1>
+          <p className="text-gray-700 dark:text-gray-300 mt-2">Manage user conversations and support requests</p>
         </div>
-        <div className="flex items-center gap-4 text-sm text-gray-600">
+        <div className="flex items-center gap-4 text-sm text-gray-700 dark:text-gray-300">
           <span className="flex items-center gap-1">
             <Users className="w-4 h-4" />
             {conversations.length} conversations
@@ -327,29 +328,30 @@ export default function AdminMessaging() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-16rem)] min-h-[600px]">
-        {/* Conversations Sidebar */}
+      {/* Enhanced Chat Interface */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-10rem)]">
+        {/* Enhanced Conversations Sidebar */}
         <div className="lg:col-span-1">
-          <Card className="h-full">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg flex items-center space-x-2">
-                <MessageCircle className="w-5 h-5" />
+          <Card className="h-full border-gray-300 dark:border-gray-600 shadow-sm flex flex-col">
+            <CardHeader className="pb-4 bg-white/95 dark:bg-gray-800/90 flex-shrink-0">
+              <CardTitle className="text-lg flex items-center space-x-2 text-gray-900 dark:text-white">
+                <MessageCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <span>User Conversations</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-0">
-              <div className="space-y-1 max-h-[calc(100vh-20rem)] overflow-y-auto">
+            <CardContent className="p-0 flex-1 overflow-hidden">
+              <div className="space-y-1 h-full overflow-y-auto pt-4">
                 {conversations.map((conversation) => (
                   <div 
                     key={conversation.user_id}
-                    className={`p-4 mx-4 mb-2 rounded-lg cursor-pointer transition-colors ${
+                    className={`p-4 mx-4 mb-2 rounded-lg cursor-pointer transition-all duration-200 ${
                       selectedConversation?.user_id === conversation.user_id 
-                        ? 'bg-blue-50 border border-blue-200' 
-                        : 'hover:bg-gray-50'
+                        ? 'bg-blue-100 dark:bg-blue-900/30 border border-blue-300 dark:border-blue-600' 
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-800/50'
                     }`}
                     onClick={() => handleSelectConversation(conversation)}
                   >
-                    <div className="flex items-start space-x-3">
+                    <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
                         <span className="text-white text-xs font-semibold">
                           {getInitials(conversation.user_name)}
@@ -357,16 +359,16 @@ export default function AdminMessaging() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <p className="font-medium text-sm truncate">{conversation.user_name}</p>
+                          <p className="font-semibold text-sm truncate text-gray-900 dark:text-white">{conversation.user_name}</p>
                           {conversation.unread_count > 0 && (
-                            <Badge className="bg-red-100 text-red-800 text-xs">
+                            <Badge className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200 text-xs">
                               {conversation.unread_count}
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-gray-500 truncate mb-1">{conversation.user_email}</p>
-                        <p className="text-xs text-gray-600 truncate">{conversation.last_message}</p>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate mb-1">{conversation.user_email}</p>
+                        <p className="text-xs text-gray-700 dark:text-gray-300 truncate">{conversation.last_message}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                           {formatRelativeTime(conversation.last_message_time)}
                         </p>
                       </div>
@@ -374,7 +376,7 @@ export default function AdminMessaging() {
                   </div>
                 ))}
                 {conversations.length === 0 && (
-                  <div className="p-4 text-center text-gray-500 text-sm">
+                  <div className="p-4 text-center text-gray-600 dark:text-gray-400 text-sm">
                     No conversations yet
                   </div>
                 )}
@@ -383,11 +385,11 @@ export default function AdminMessaging() {
           </Card>
         </div>
 
-        {/* Main Chat Area */}
+        {/* Enhanced Main Chat Area */}
         <div className="lg:col-span-3">
-          <Card className="h-full flex flex-col">
-            {/* Chat Header */}
-            <CardHeader className="border-b pb-4">
+          <Card className="h-full flex flex-col border-gray-300 dark:border-gray-600 shadow-sm">
+            {/* Enhanced Chat Header */}
+            <CardHeader className="border-b border-gray-300 dark:border-gray-600 pb-4 bg-white/95 dark:bg-gray-800/90">
               <div className="flex items-center space-x-3">
                 {selectedConversation ? (
                   <>
@@ -397,40 +399,40 @@ export default function AdminMessaging() {
                       </span>
                     </div>
                     <div>
-                      <CardTitle className="text-lg">{selectedConversation.user_name}</CardTitle>
-                      <p className="text-sm text-gray-600">{selectedConversation.user_email}</p>
+                      <CardTitle className="text-lg text-gray-900 dark:text-white">{selectedConversation.user_name}</CardTitle>
+                      <p className="text-sm text-gray-700 dark:text-gray-300">{selectedConversation.user_email}</p>
                     </div>
                   </>
                 ) : (
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                      <MessageCircle className="w-5 h-5 text-gray-400" />
+                    <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                      <MessageCircle className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                     </div>
-                    <CardTitle className="text-lg">Select a conversation</CardTitle>
+                    <CardTitle className="text-lg text-gray-900 dark:text-white">Select a conversation</CardTitle>
                   </div>
                 )}
               </div>
             </CardHeader>
 
-            {/* Messages Area */}
-            <CardContent className="flex-1 overflow-y-auto p-4">
+            {/* Enhanced Messages Area */}
+            <CardContent className="flex-1 overflow-y-auto p-4 pt-6 bg-gray-50/50 dark:bg-gray-900/50">
               {!selectedConversation ? (
                 <div className="flex flex-col items-center justify-center h-full text-center">
-                  <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6">
-                    <MessageCircle className="w-10 h-10 text-blue-500" />
+                  <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-6">
+                    <MessageCircle className="w-10 h-10 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-3">Select a conversation</h3>
-                  <p className="text-gray-600 max-w-md leading-relaxed">
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Select a conversation</h3>
+                  <p className="text-gray-700 dark:text-gray-300 max-w-md leading-relaxed">
                     Choose a user conversation from the sidebar to view messages and respond.
                   </p>
                 </div>
               ) : selectedConversation.messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center">
-                  <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6">
-                    <Reply className="w-10 h-10 text-blue-500" />
+                  <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-6">
+                    <Reply className="w-10 h-10 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-3">No messages yet</h3>
-                  <p className="text-gray-600 max-w-md leading-relaxed">
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">No messages yet</h3>
+                  <p className="text-gray-700 dark:text-gray-300 max-w-md leading-relaxed">
                     Start the conversation with {selectedConversation.user_name}.
                   </p>
                 </div>
@@ -452,10 +454,10 @@ export default function AdminMessaging() {
                           </div>
                         )}
                         <div
-                          className={`rounded-2xl px-4 py-3 ${
+                          className={`rounded-2xl px-4 py-3 shadow-sm ${
                             message.sender_id === user?.id
                               ? 'bg-blue-600 text-white'
-                              : 'bg-gray-100 text-gray-900'
+                              : 'bg-white dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600'
                           }`}
                         >
                           <p className="text-sm leading-relaxed">{message.content}</p>
@@ -464,7 +466,7 @@ export default function AdminMessaging() {
                               className={`text-xs ${
                                 message.sender_id === user?.id
                                   ? 'text-blue-100'
-                                  : 'text-gray-500'
+                                  : 'text-gray-600 dark:text-gray-400'
                               }`}
                             >
                               {formatDate(message.created_at)}
@@ -494,25 +496,25 @@ export default function AdminMessaging() {
               )}
             </CardContent>
 
-            {/* Message Input */}
-            <div className="border-t p-4">
+            {/* Enhanced Message Input */}
+            <div className="border-t border-gray-300 dark:border-gray-600 p-4 bg-white/95 dark:bg-gray-800/90">
               <form onSubmit={handleSendMessage} className="flex space-x-3">
                 <Input
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder={selectedConversation ? `Reply to ${selectedConversation.user_name}...` : "Select a conversation first..."}
-                  className="flex-1"
+                  className="flex-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800/50"
                   disabled={sending || !selectedConversation}
                 />
                 <Button 
                   type="submit" 
                   disabled={sending || !newMessage.trim() || !selectedConversation}
-                  className="px-6"
+                  className="px-6 bg-blue-600 hover:bg-blue-700"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
               </form>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
                 Press Enter to send your response
               </p>
             </div>

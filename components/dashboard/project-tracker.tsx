@@ -203,12 +203,12 @@ const ProjectTracker = () => {
       <div className="space-y-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-16 bg-white/10 dark:bg-gray-800/20 rounded-lg animate-pulse" />
+            <div key={i} className="h-16 bg-gray-300/70 dark:bg-gray-700/50 rounded-lg animate-pulse" />
           ))}
         </div>
         <div className="space-y-3">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-20 bg-white/10 dark:bg-gray-800/20 rounded-lg animate-pulse" />
+            <div key={i} className="h-20 bg-gray-300/70 dark:bg-gray-700/50 rounded-lg animate-pulse" />
           ))}
         </div>
       </div>
@@ -222,15 +222,15 @@ const ProjectTracker = () => {
           <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
             <Layers className="h-6 w-6 text-white" />
           </div>
-          <h3 className="text-lg font-semibold text-white dark:text-white mb-2">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             No Active Projects
           </h3>
-          <p className="text-white/70 dark:text-gray-400 mb-4 text-sm">
+          <p className="text-gray-700 dark:text-gray-300 mb-4 text-sm">
             {isAdmin ? 'Create a new project to get started.' : 'You don\'t have any active projects yet.'}
           </p>
           <Link
             href={isAdmin ? "/projects/create" : "/projects"}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg text-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg text-sm font-medium"
           >
             <Layers className="h-4 w-4" />
             {isAdmin ? 'Create Project' : 'View Projects'}
@@ -239,8 +239,8 @@ const ProjectTracker = () => {
 
         {/* Show completed projects for admins with reactivation option */}
         {isAdmin && completedProjects.length > 0 && (
-          <div className="border-t border-white/10 dark:border-gray-700/20 pt-6">
-            <h4 className="text-sm font-medium text-white/80 dark:text-gray-300 mb-3">
+          <div className="border-t border-gray-300 dark:border-gray-600 pt-6">
+            <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">
               Completed Projects (Click to Reactivate)
             </h4>
             <div className="space-y-2">
@@ -248,23 +248,23 @@ const ProjectTracker = () => {
                 <button
                   key={project.id}
                   onClick={() => reactivateProject(project.id)}
-                  className="w-full text-left bg-white/5 dark:bg-gray-800/10 backdrop-blur-sm rounded-lg p-3 border border-white/10 dark:border-gray-700/20 hover:bg-white/10 dark:hover:bg-gray-800/20 transition-all duration-200 group"
+                  className="w-full text-left bg-gray-200/90 dark:bg-gray-700/80 backdrop-blur-sm rounded-lg p-3 border border-gray-300 dark:border-gray-600 hover:bg-gray-300/90 dark:hover:bg-gray-700/90 transition-all duration-200 group"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-white/70 text-sm group-hover:text-white transition-colors truncate">
+                      <p className="font-medium text-gray-900 dark:text-gray-100 text-sm group-hover:text-gray-800 dark:group-hover:text-white transition-colors truncate">
                         {project.title}
                       </p>
-                      <p className="text-xs text-white/50 dark:text-gray-500">
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
                         Completed • Click to reactivate
                       </p>
                     </div>
-                    <CheckCircle2 className="h-4 w-4 text-green-400 group-hover:text-green-300 transition-colors" />
+                    <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400 group-hover:text-green-700 dark:group-hover:text-green-300 transition-colors" />
                   </div>
                 </button>
               ))}
               {completedProjects.length > 3 && (
-                <p className="text-xs text-white/50 dark:text-gray-500 text-center pt-2">
+                <p className="text-xs text-gray-600 dark:text-gray-400 text-center pt-2">
                   +{completedProjects.length - 3} more completed projects
                 </p>
               )}
@@ -277,69 +277,79 @@ const ProjectTracker = () => {
 
   return (
     <div className="space-y-4">
-      {/* Simplified Stats */}
+      {/* Enhanced Stats with Better Visibility */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-white/10 dark:bg-gray-800/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-gray-700/30">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-blue-400" />
+        <div className="bg-white/95 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 border border-gray-300 dark:border-gray-600 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+              <TrendingUp className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            </div>
             <div>
-              <p className="text-xs text-white/70 dark:text-gray-400">Active</p>
-              <p className="text-lg font-bold text-white">{stats.totalActive}</p>
+              <p className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wide">Active</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalActive}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white/10 dark:bg-gray-800/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-gray-700/30">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-green-400" />
+        <div className="bg-white/95 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 border border-gray-300 dark:border-gray-600 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg">
+              <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
+            </div>
             <div>
-              <p className="text-xs text-white/70 dark:text-gray-400">Tasks</p>
-              <p className="text-lg font-bold text-white">{stats.completedTasks}/{stats.totalTasks}</p>
+              <p className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wide">Tasks</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.completedTasks}/{stats.totalTasks}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white/10 dark:bg-gray-800/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-gray-700/30">
-          <div className="flex items-center gap-2">
-            <Zap className="h-4 w-4 text-purple-400" />
+        <div className="bg-white/95 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 border border-gray-300 dark:border-gray-600 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
+              <Zap className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+            </div>
             <div>
-              <p className="text-xs text-white/70 dark:text-gray-400">Progress</p>
-              <p className="text-lg font-bold text-white">
+              <p className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wide">Progress</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {stats.totalTasks > 0 ? Math.round((stats.completedTasks / stats.totalTasks) * 100) : 0}%
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white/10 dark:bg-gray-800/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-gray-700/30">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 text-red-400" />
+        <div className="bg-white/95 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 border border-gray-300 dark:border-gray-600 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-red-100 dark:bg-red-900/50 rounded-lg">
+              <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+            </div>
             <div>
-              <p className="text-xs text-white/70 dark:text-gray-400">Overdue</p>
-              <p className="text-lg font-bold text-white">{stats.overdue}</p>
+              <p className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wide">Overdue</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.overdue}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Admin Quick Actions */}
+      {/* Admin Quick Actions with Enhanced Visibility */}
       {isAdmin && (
-        <div className="flex items-center justify-between bg-white/5 dark:bg-gray-800/10 backdrop-blur-sm rounded-lg p-3 border border-white/10 dark:border-gray-700/20">
-          <div className="flex items-center gap-2">
-            <Layers className="h-4 w-4 text-blue-400" />
-            <span className="text-sm font-medium text-white/80">Admin Actions</span>
+        <div className="flex items-center justify-between bg-white/95 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-4 border border-gray-300 dark:border-gray-600 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+              <Layers className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            </div>
+            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">Admin Actions</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Link
               href="/projects/create"
-              className="inline-flex items-center gap-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
             >
               <Plus className="h-3 w-3" />
               New Project
             </Link>
             <Link
               href="/projects"
-              className="inline-flex items-center gap-1 px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-xs transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
             >
               Manage All
             </Link>
@@ -347,8 +357,8 @@ const ProjectTracker = () => {
         </div>
       )}
 
-      {/* Simplified Projects List */}
-      <div className="space-y-3 max-h-80 overflow-y-auto">
+      {/* Enhanced Projects List */}
+      <div className="space-y-3">
         {projects.slice(0, 5).map((project) => {
           const progress = getProjectProgress(project);
           const daysUntil = getDaysUntilDeadline(project.deadline);
@@ -356,44 +366,54 @@ const ProjectTracker = () => {
 
           return (
             <Link key={project.id} href={`/projects/${project.id}`}>
-              <div className="group bg-white/10 dark:bg-gray-800/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-gray-700/30 hover:bg-white/20 dark:hover:bg-gray-800/30 transition-all duration-200 cursor-pointer">
-                <div className="flex items-center justify-between mb-2">
+              <div className="group bg-white/95 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 border border-gray-300 dark:border-gray-600 hover:bg-gray-50/95 dark:hover:bg-gray-700/90 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md">
+                <div className="flex items-center justify-between mb-3">
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-white text-sm group-hover:text-blue-200 transition-colors truncate">
+                    <h4 className="font-semibold text-gray-900 dark:text-white text-base group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors truncate">
                       {project.title}
                     </h4>
-                    <p className="text-xs text-white/60 dark:text-gray-500 truncate">
+                    <p className="text-sm text-gray-700 dark:text-gray-300 truncate">
                       {project.tasks.length} tasks • {progress}% complete
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     {overdue && (
-                      <AlertCircle className="h-3 w-3 text-red-400" />
+                      <div className="flex items-center gap-1 px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded-md">
+                        <AlertCircle className="h-3 w-3 text-red-600 dark:text-red-400" />
+                        <span className="text-xs font-medium text-red-700 dark:text-red-300">Overdue</span>
+                      </div>
                     )}
                     {project.live_preview_url && (
-                      <ExternalLink className="h-3 w-3 text-green-400" />
+                      <div className="flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded-md">
+                        <ExternalLink className="h-3 w-3 text-green-600 dark:text-green-400" />
+                        <span className="text-xs font-medium text-green-700 dark:text-green-300">Live</span>
+                      </div>
                     )}
-                    <ArrowRight className="h-3 w-3 text-white/50 group-hover:text-white group-hover:translate-x-0.5 transition-all duration-200" />
+                    <ArrowRight className="h-4 w-4 text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200 group-hover:translate-x-1 transition-all duration-200" />
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  {/* Progress Bar */}
-                  <div className="flex-1 mr-3">
-                    <div className="w-full bg-white/20 dark:bg-gray-700/50 rounded-full h-1.5">
+                <div className="flex items-center gap-4">
+                  {/* Enhanced Progress Bar */}
+                  <div className="flex-1">
+                    <div className="w-full bg-gray-300 dark:bg-gray-600 rounded-full h-2">
                       <div 
-                        className="bg-gradient-to-r from-blue-400 to-purple-500 h-1.5 rounded-full transition-all duration-500"
+                        className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500"
                         style={{ width: `${progress}%` }}
                       />
                     </div>
                   </div>
 
-                  {/* Deadline */}
+                  {/* Enhanced Deadline */}
                   {project.deadline && (
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3 text-white/50" />
-                      <span className={`text-xs ${overdue ? 'text-red-400' : 'text-white/70'}`}>
-                        {daysUntil !== null && daysUntil >= 0 ? `${daysUntil}d` : `${Math.abs(daysUntil!)}d overdue`}
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                      <span className={`text-sm font-medium ${
+                        overdue 
+                          ? 'text-red-600 dark:text-red-400' 
+                          : 'text-gray-700 dark:text-gray-300'
+                      }`}>
+                        {daysUntil !== null && daysUntil >= 0 ? `${daysUntil} days` : `${Math.abs(daysUntil!)} days overdue`}
                       </span>
                     </div>
                   )}
@@ -404,15 +424,15 @@ const ProjectTracker = () => {
         })}
       </div>
 
-      {/* View All Link */}
+      {/* Enhanced View All Link */}
       {projects.length > 0 && (
-        <div className="pt-2 border-t border-white/10 dark:border-gray-700/20">
+        <div className="pt-4 border-t border-gray-300 dark:border-gray-600">
           <Link
             href="/projects"
-            className="flex items-center justify-center gap-2 text-sm text-white/70 dark:text-gray-400 hover:text-white dark:hover:text-white transition-colors group py-2"
+            className="flex items-center justify-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors group py-3 px-4 rounded-lg hover:bg-gray-100/80 dark:hover:bg-gray-800/50"
           >
             <span>View all projects</span>
-            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform duration-200" />
+            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
           </Link>
         </div>
       )}

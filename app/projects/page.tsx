@@ -240,23 +240,24 @@ const ProjectCard = ({ project, onReviewCreated }: { project: Project; onReviewC
       <Link href={`/projects/${project.id}`}>
         <div style={{ borderTop: `3px solid ${statusInfo.color}` }} className="rounded-lg overflow-hidden">
           <Card 
-            className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer h-full flex flex-col group glass-card card-3d has-video border-t-0"
+            className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer h-full flex flex-col group glass-card card-3d"
             videoSrc="/card.mp4"
             videoOpacity="opacity-50" 
             videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-            bgColor="bg-slate-500/75 dark:bg-gray-900/80"
-            borderColor="border-gray-200 dark:border-gray-700/50"
+            bgColor="bg-white dark:bg-gray-900/90"
+            borderColor="border-gray-200 dark:border-gray-700"
+            hybridMode={true}
           >
             <div className="p-6 pb-2">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
-                  <div className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border-2 mb-3 bg-white/20 backdrop-blur-sm" style={{ borderColor: statusInfo.color, color: statusInfo.color }}>
+                  <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium border mb-3 bg-white dark:bg-gray-800" style={{ borderColor: statusInfo.color, color: statusInfo.color }}>
                     {statusInfo.label}
                   </div>
-                  <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-blue-300 transition-colors line-clamp-1">
+                  <h3 className="text-xl font-semibold text-black dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
                     {project.title}
                   </h3>
-                  <p className="text-white/80 line-clamp-2 text-sm leading-relaxed">
+                  <p className="text-gray-600 dark:text-gray-300 line-clamp-2 text-sm leading-relaxed">
                     {project.description}
                   </p>
                 </div>
@@ -275,7 +276,7 @@ const ProjectCard = ({ project, onReviewCreated }: { project: Project; onReviewC
                         cy="18" 
                         r="16" 
                         fill="none" 
-                        stroke="rgba(255,255,255,0.3)" 
+                        stroke="rgba(156, 163, 175, 0.3)" 
                         strokeWidth="2"
                       />
                       {/* Progress circle */}
@@ -292,12 +293,12 @@ const ProjectCard = ({ project, onReviewCreated }: { project: Project; onReviewC
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-sm font-semibold text-white">{completionPercentage}%</span>
+                      <span className="text-sm font-semibold text-black dark:text-white">{completionPercentage}%</span>
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-white">Progress</p>
-                    <p className="text-xs text-white/70">
+                    <p className="text-sm font-medium text-black dark:text-white">Progress</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
                       {completedTasks} / {totalTasks} tasks
                     </p>
                   </div>
@@ -308,8 +309,8 @@ const ProjectCard = ({ project, onReviewCreated }: { project: Project; onReviewC
               <div className="space-y-3">
                 {project.deadline && (
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-white/70" />
-                    <span className="text-sm text-white/70">
+                    <Calendar className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
                       Due {new Date(project.deadline).toLocaleDateString()}
                     </span>
                   </div>
@@ -319,18 +320,18 @@ const ProjectCard = ({ project, onReviewCreated }: { project: Project; onReviewC
                   <div className="flex items-center gap-4">
                     {totalTasks > 0 && (
                       <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4 text-white/70" />
-                        <span className="text-sm text-white/70">{totalTasks} tasks</span>
+                        <Clock className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                        <span className="text-sm text-gray-600 dark:text-gray-400">{totalTasks} tasks</span>
                       </div>
                     )}
                   </div>
                   
                   <div className="flex items-center gap-2">
                     {project.live_preview_url && (
-                      <div className="w-2 h-2 rounded-full bg-green-400" title="Live preview available" />
+                      <div className="w-2 h-2 rounded-full bg-green-500" title="Live preview available" />
                     )}
                     {project.repo_url && (
-                      <div className="w-2 h-2 rounded-full bg-gray-400" title="Repository available" />
+                      <div className="w-2 h-2 rounded-full bg-gray-500" title="Repository available" />
                     )}
                   </div>
                 </div>
@@ -339,14 +340,14 @@ const ProjectCard = ({ project, onReviewCreated }: { project: Project; onReviewC
               {/* Screenshot Preview */}
               {project.screenshots_urls && project.screenshots_urls.length > 0 && (
                 <div className="mt-4">
-                  <div className="relative h-32 w-full rounded-lg overflow-hidden bg-white/10 backdrop-blur-sm">
+                  <div className="relative h-32 w-full rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
                     <img
                       src={project.screenshots_urls[0]}
                       alt={`${project.title} preview`}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     {project.screenshots_urls.length > 1 && (
-                      <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
+                      <div className="absolute top-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
                         +{project.screenshots_urls.length - 1}
                       </div>
                     )}
@@ -502,19 +503,20 @@ const ProjectsContent = () => {
         {/* Projects Grid/List */}
         {filteredProjects.length === 0 ? (
           <Card 
-            className="glass-card card-3d has-video"
+            className="glass-card card-3d"
             videoSrc="/card.mp4"
-            videoOpacity="opacity-40" 
+            videoOpacity="opacity-50" 
             videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-            bgColor="bg-slate-500/75 dark:bg-gray-900/80"
-            borderColor="border-gray-200 dark:border-gray-700/50"
+            bgColor="bg-white dark:bg-gray-900/90"
+            borderColor="border-gray-200 dark:border-gray-700"
+            hybridMode={true}
           >
             <CardContent className="p-12 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                <Folder className="h-8 w-8 text-white" />
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
+                <Folder className="h-8 w-8 text-gray-600 dark:text-gray-300" />
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">No projects found</h3>
-              <p className="text-white/80">
+              <h3 className="text-lg font-semibold text-black dark:text-white mb-2">No projects found</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 {filter === 'all' ? 'Get started by creating your first project.' : `No projects match the "${filter}" filter.`}
               </p>
             </CardContent>

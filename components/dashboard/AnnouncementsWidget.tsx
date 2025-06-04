@@ -111,11 +111,11 @@ export default function AnnouncementsWidget() {
   if (announcements.length === 0) {
     return (
       <div className="space-y-6">
-        <p className="text-sm text-gray-600 dark:text-gray-400">No announcements at this time.</p>
-        <div className="h-24 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border-2 border-dashed border-blue-200 dark:border-blue-700 flex items-center justify-center">
+        <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">No announcements at this time.</p>
+        <div className="h-24 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-xl border-2 border-dashed border-blue-300 dark:border-blue-600 flex items-center justify-center">
           <div className="text-center">
-            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">Announcements will appear here</span>
-            <p className="text-xs text-blue-500 dark:text-blue-500 mt-1">Stay tuned for updates</p>
+            <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">Announcements will appear here</span>
+            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1 font-medium">Stay tuned for updates</p>
           </div>
         </div>
       </div>
@@ -123,12 +123,12 @@ export default function AnnouncementsWidget() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {announcements.map((announcement) => (
-        <div key={announcement.id} className="flex gap-4 p-4 bg-white/5 dark:bg-gray-800/30 rounded-xl border border-gray-200/20 dark:border-gray-700/30 hover:bg-white/10 dark:hover:bg-gray-700/40 transition-all duration-200">
-          {/* Image/Icon */}
+        <div key={announcement.id} className="flex gap-4 p-4 bg-white/90 dark:bg-gray-800/70 rounded-xl border border-gray-300 dark:border-gray-600 hover:bg-white/95 dark:hover:bg-gray-800/80 transition-all duration-200 shadow-sm hover:shadow-md">
+          {/* Enhanced Image/Icon */}
           <div className="flex-shrink-0">
-            <div className="w-16 h-16 rounded-xl overflow-hidden">
+            <div className="w-16 h-16 rounded-xl overflow-hidden border border-gray-300 dark:border-gray-600">
               {announcement.image_url ? (
                 <img 
                   src={announcement.image_url}
@@ -148,7 +148,7 @@ export default function AnnouncementsWidget() {
                   }}
                 />
               ) : (
-                // Default gradient background with emoji icon when no image is provided
+                // Enhanced default gradient background with emoji icon when no image is provided
                 <div className={`w-full h-full bg-gradient-to-br ${getPlaceholderColor(announcement.title, announcement.content)} flex items-center justify-center`}>
                   <span className="text-2xl">
                     {getAnnouncementIcon(announcement.title, announcement.content)}
@@ -158,20 +158,20 @@ export default function AnnouncementsWidget() {
             </div>
           </div>
 
-          {/* Content */}
+          {/* Enhanced Content */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-2">
+            <h3 className="font-semibold text-gray-900 dark:text-white text-base mb-2">
               {announcement.title}
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-3">
+            <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed mb-3 font-medium">
               {announcement.content}
             </p>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500 dark:text-gray-400">
+              <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">
                 {formatDate(announcement.created_at)}
               </span>
               {announcement.expires_at && (
-                <span className="text-xs text-amber-600 dark:text-amber-400">
+                <span className="text-xs text-amber-700 dark:text-amber-300 font-medium">
                   Expires {formatDate(announcement.expires_at)}
                 </span>
               )}
@@ -181,8 +181,8 @@ export default function AnnouncementsWidget() {
       ))}
 
       {announcements.length > 3 && (
-        <div className="text-center pt-2">
-          <button className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
+        <div className="text-center pt-4 border-t border-gray-300 dark:border-gray-600">
+          <button className="text-sm text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 font-semibold py-2 px-4 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors">
             View all announcements →
           </button>
         </div>

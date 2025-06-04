@@ -32,6 +32,18 @@ export default function EnzoChat() {
     }
   }, [isOpen, messages.length]);
 
+  // Listen for mobile chat toggle events from the header
+  useEffect(() => {
+    const handleMobileChatToggle = () => {
+      setIsOpen(!isOpen);
+    };
+
+    window.addEventListener('toggleMobileChat', handleMobileChatToggle);
+    return () => {
+      window.removeEventListener('toggleMobileChat', handleMobileChatToggle);
+    };
+  }, [isOpen]);
+
   // Scroll to bottom when messages change - BUT ONLY for new messages, not when opening
   useEffect(() => {
     // Only auto-scroll if this is a new message (not the initial welcome message)
@@ -109,7 +121,7 @@ export default function EnzoChat() {
     <>
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-20 right-4 w-80 h-96 z-50 bg-white dark:bg-gray-900 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col">
+        <div className="fixed bottom-4 right-4 md:bottom-20 md:right-4 w-80 h-96 z-50 bg-white dark:bg-gray-900 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-brand-yellow dark:bg-brand-yellow rounded-t-lg flex-shrink-0">
             <div className="flex items-center gap-2">
@@ -132,7 +144,7 @@ export default function EnzoChat() {
           </div>
 
           {/* Messages */}
-          <div 
+          <div
             className="flex-1 overflow-y-auto p-4 space-y-4 bg-white dark:bg-gray-900"
             style={{ height: 'calc(100% - 120px)' }}
           >
@@ -212,10 +224,10 @@ export default function EnzoChat() {
         </div>
       )}
 
-      {/* Floating Button */}
+      {/* Floating Button - Hidden on mobile */}
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-4 right-4 z-40 h-12 w-12 rounded-full shadow-lg transition-all duration-200"
+        className="fixed bottom-4 right-4 z-40 h-12 w-12 rounded-full shadow-lg transition-all duration-200 hidden md:flex"
         style={{
           backgroundColor: '#ffd166',
           color: '#111827'

@@ -148,9 +148,23 @@ const ResponsivePreview = ({ url, isFullscreen, onClose }: {
   isFullscreen: boolean;
   onClose: () => void;
 }) => {
-  const [deviceView, setDeviceView] = useState<DeviceView>('desktop');
+  // Mobile-first: default to mobile view
+  const [deviceView, setDeviceView] = useState<DeviceView>('mobile');
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+
+  // Check if user is on mobile device
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobileDevice(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleIframeLoad = () => {
     setIsLoading(false);
@@ -162,7 +176,7 @@ const ResponsivePreview = ({ url, isFullscreen, onClose }: {
     setHasError(true);
   };
 
-  // Keyboard controls for fullscreen mode
+  // Enhanced keyboard and touch controls for fullscreen mode
   useEffect(() => {
     if (!isFullscreen) return;
 
@@ -183,83 +197,112 @@ const ResponsivePreview = ({ url, isFullscreen, onClose }: {
       }
     };
 
+    // Add touch event for mobile escape
+    const handleTouchStart = (e: TouchEvent) => {
+      if (isMobileDevice && e.touches.length === 2) {
+        // Two-finger tap to close on mobile
+        onClose();
+      }
+    };
+
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isFullscreen, onClose]);
+    document.addEventListener('touchstart', handleTouchStart);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('touchstart', handleTouchStart);
+    };
+  }, [isFullscreen, onClose, isMobileDevice]);
 
   if (isFullscreen) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-95 z-50 flex flex-col">
-        {/* Enhanced Fullscreen Header */}
-        <div className="bg-gray-900 text-white p-4 flex items-center justify-between border-b border-gray-700">
-          <div className="flex items-center gap-6">
-            <h3 className="text-xl font-semibold">Live Preview</h3>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-400 mr-2">Device:</span>
+        {/* Mobile-optimized Fullscreen Header */}
+        <div className="bg-gray-900 text-white p-2 sm:p-4 flex items-center justify-between border-b border-gray-700">
+          <div className="flex items-center gap-2 sm:gap-6 flex-1 min-w-0">
+            <h3 className="text-lg sm:text-xl font-semibold truncate">Live Preview</h3>
+            
+            {/* Mobile-optimized device controls */}
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+              {!isMobileDevice && (
+                <span className="text-xs sm:text-sm text-gray-400 mr-1 sm:mr-2 hidden sm:block">Device:</span>
+              )}
               <button
                 onClick={() => setDeviceView('desktop')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-1 px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                   deviceView === 'desktop' 
                     ? 'bg-blue-600 text-white shadow-lg' 
                     : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
                 }`}
+                title="Desktop View"
               >
-                <Monitor className="w-4 h-4" />
-                Desktop
+                <Monitor className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Desktop</span>
               </button>
               <button
                 onClick={() => setDeviceView('tablet')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-1 px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                   deviceView === 'tablet' 
                     ? 'bg-blue-600 text-white shadow-lg' 
                     : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
                 }`}
+                title="Tablet View"
               >
-                <Tablet className="w-4 h-4" />
-                Tablet
+                <Tablet className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Tablet</span>
               </button>
               <button
                 onClick={() => setDeviceView('mobile')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-1 px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                   deviceView === 'mobile' 
                     ? 'bg-blue-600 text-white shadow-lg' 
                     : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
                 }`}
+                title="Mobile View"
               >
-                <Smartphone className="w-4 h-4" />
-                Mobile
+                <Smartphone className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Mobile</span>
               </button>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-400">
-              {deviceView === 'desktop' ? 'Full Screen' : `${deviceDimensions[deviceView].width} × ${deviceDimensions[deviceView].height}`}
-            </span>
+          
+          {/* Close button - larger and more accessible on mobile */}
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+            {!isMobileDevice && (
+              <span className="text-xs sm:text-sm text-gray-400 hidden lg:block">
+                {deviceView === 'desktop' ? 'Full Screen' : `${deviceDimensions[deviceView].width} × ${deviceDimensions[deviceView].height}`}
+              </span>
+            )}
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+              className="p-2 sm:p-2 hover:bg-gray-700 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+              title="Close Preview"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </div>
         </div>
 
-        {/* Enhanced Fullscreen Preview */}
-        <div className="flex-1 flex items-center justify-center p-8 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        {/* Mobile-optimized Fullscreen Preview */}
+        <div className="flex-1 flex items-center justify-center p-2 sm:p-8 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
           <div 
-            className="relative bg-white rounded-2xl shadow-2xl overflow-hidden mx-auto transition-all duration-500 ease-in-out"
+            className="relative bg-white rounded-lg sm:rounded-2xl shadow-2xl overflow-hidden mx-auto transition-all duration-500 ease-in-out"
             style={{
-              width: deviceView === 'desktop' ? '95vw' : deviceDimensions[deviceView].width,
-              height: deviceView === 'desktop' ? '85vh' : '80vh',
-              maxWidth: deviceView === 'desktop' ? 'none' : deviceDimensions[deviceView].width
+              width: deviceView === 'desktop' ? (isMobileDevice ? '100vw' : '95vw') : 
+                     deviceView === 'tablet' ? (isMobileDevice ? '100vw' : deviceDimensions[deviceView].width) :
+                     isMobileDevice ? '100vw' : deviceDimensions[deviceView].width,
+              height: isMobileDevice ? 'calc(100vh - 120px)' : 
+                      deviceView === 'desktop' ? '85vh' : 
+                      '80vh',
+              maxWidth: isMobileDevice ? '100vw' : (deviceView === 'desktop' ? 'none' : deviceDimensions[deviceView].width),
+              margin: isMobileDevice ? '0' : 'auto'
             }}
           >
             {isLoading && (
               <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center z-10">
-                <div className="text-center">
-                  <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent mx-auto mb-4"></div>
-                  <p className="text-lg text-gray-600 dark:text-gray-400">Loading {deviceView} preview...</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
+                <div className="text-center px-4">
+                  <div className="h-8 w-8 sm:h-12 sm:w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+                  <p className="text-sm sm:text-lg text-gray-600 dark:text-gray-400">Loading {deviceView} preview...</p>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-500 mt-2">
                     {deviceView === 'desktop' ? 'Full screen experience' : `Simulating ${deviceView} viewport`}
                   </p>
                 </div>
@@ -267,20 +310,20 @@ const ResponsivePreview = ({ url, isFullscreen, onClose }: {
             )}
             {hasError && (
               <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center z-10">
-                <div className="text-center">
-                  <div className="h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-6">
-                    <X className="h-8 w-8 text-red-500" />
+                <div className="text-center px-4">
+                  <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-6">
+                    <X className="h-6 w-6 sm:h-8 sm:w-8 text-red-500" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Failed to load preview</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">The preview couldn't be loaded in {deviceView} mode</p>
+                  <h3 className="text-sm sm:text-lg font-medium text-gray-900 dark:text-white mb-2">Failed to load preview</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-4">The preview couldn't be loaded in {deviceView} mode</p>
                   <div className="space-y-2">
                     <a
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors"
+                      className="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs sm:text-sm transition-colors"
                     >
-                      <ExternalLink className="w-4 h-4" />
+                      <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
                       Open in new tab
                     </a>
                     <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
@@ -301,54 +344,62 @@ const ResponsivePreview = ({ url, isFullscreen, onClose }: {
               allow="fullscreen"
               sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
               style={{
-                width: deviceView === 'desktop' ? '100%' : deviceDimensions[deviceView].width,
+                width: '100%',
                 height: '100%'
               }}
             />
           </div>
         </div>
 
-        {/* Fullscreen Footer with Info */}
-        <div className="bg-gray-900 border-t border-gray-700 px-4 py-2">
-          <div className="flex items-center justify-between text-sm text-gray-400">
-            <div className="flex items-center gap-6">
-              <span>Press <kbd className="px-2 py-1 bg-gray-800 rounded text-xs">ESC</kbd> to exit</span>
-              <span className="text-xs">Shortcuts: <kbd className="px-1 bg-gray-800 rounded">1</kbd> Desktop, <kbd className="px-1 bg-gray-800 rounded">2</kbd> Tablet, <kbd className="px-1 bg-gray-800 rounded">3</kbd> Mobile</span>
+        {/* Mobile-optimized Footer */}
+        <div className="bg-gray-900 border-t border-gray-700 px-2 sm:px-4 py-2">
+          <div className="flex items-center justify-between text-xs sm:text-sm text-gray-400">
+            <div className="flex items-center gap-2 sm:gap-6 min-w-0 flex-1">
+              {isMobileDevice ? (
+                <span className="truncate">Two-finger tap to exit</span>
+              ) : (
+                <>
+                  <span>Press <kbd className="px-1 sm:px-2 py-1 bg-gray-800 rounded text-xs">ESC</kbd> to exit</span>
+                  <span className="text-xs hidden sm:inline">Shortcuts: <kbd className="px-1 bg-gray-800 rounded">1</kbd> Desktop, <kbd className="px-1 bg-gray-800 rounded">2</kbd> Tablet, <kbd className="px-1 bg-gray-800 rounded">3</kbd> Mobile</span>
+                </>
+              )}
             </div>
-            <span>Current view: <span className="text-blue-400 font-medium">{deviceView.charAt(0).toUpperCase() + deviceView.slice(1)}</span></span>
+            <span className="flex-shrink-0">
+              <span className="text-blue-400 font-medium">{deviceView.charAt(0).toUpperCase() + deviceView.slice(1)}</span>
+            </span>
           </div>
         </div>
       </div>
     );
   }
 
-  // Regular embedded view - NO device options here (as requested)
+  // Regular embedded view - Mobile optimized with mobile as default
   return (
     <div className="w-full">
-      {/* Simple Preview Container - No device options */}
-      <div className="relative bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 h-96">
+      {/* Mobile-first Preview Container */}
+      <div className="relative bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 h-64 sm:h-96">
         {isLoading && (
           <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center z-10">
-            <div className="text-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent mx-auto mb-2"></div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Loading preview...</p>
+            <div className="text-center px-4">
+              <div className="h-6 w-6 sm:h-8 sm:w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent mx-auto mb-2"></div>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Loading mobile preview...</p>
             </div>
           </div>
         )}
         {hasError && (
           <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 flex items-center justify-center z-10">
-            <div className="text-center">
-              <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-4">
-                <X className="h-6 w-6 text-red-500" />
+            <div className="text-center px-4">
+              <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-4">
+                <X className="h-4 w-4 sm:h-6 sm:w-6 text-red-500" />
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Unable to load preview</p>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3">Unable to load preview</p>
               <a
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs sm:text-sm transition-colors"
               >
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
                 Open in new tab
               </a>
             </div>
@@ -357,7 +408,7 @@ const ResponsivePreview = ({ url, isFullscreen, onClose }: {
         <iframe
           src={url}
           className="w-full h-full border-0"
-          title="Live Preview"
+          title="Live Preview (Mobile Optimized)"
           onLoad={handleIframeLoad}
           onError={handleIframeError}
           loading="lazy"
@@ -848,69 +899,73 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
   const isOverdue = project.deadline && new Date(project.deadline) < new Date();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    <div className="p-5 md:p-8 space-y-8 max-w-[1600px] mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Enhanced Header Section */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6">
-            <Link 
-              href="/projects" 
-              className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
-            >
-              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-            </Link>
-            <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                {project?.title}
-              </h1>
-              <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
-                {project?.description}
-              </p>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <Link 
+                href="/projects" 
+                className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm flex-shrink-0"
+              >
+                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </Link>
+              <div className="h-6 w-px bg-gray-300 dark:bg-gray-600 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  {project?.title}
+                </h1>
+                <p className="text-gray-600 dark:text-gray-300 text-base sm:text-lg leading-relaxed">
+                  {project?.description}
+                </p>
+              </div>
             </div>
             <AdminOnly>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 {!project?.live_preview_url && (
                   <button
                     onClick={handleEditProject}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors shadow-sm"
+                    className="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors shadow-sm text-sm flex-1 sm:flex-none justify-center"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    Add Live Preview
+                    <span className="hidden sm:inline">Add Live Preview</span>
+                    <span className="sm:hidden">Add Preview</span>
                   </button>
                 )}
                 <button
                   onClick={handleEditProject}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm"
+                  className="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm text-sm flex-1 sm:flex-none justify-center"
                 >
                   <Edit className="w-4 h-4" />
-                  Edit Project
+                  <span className="hidden sm:inline">Edit Project</span>
+                  <span className="sm:hidden">Edit</span>
                 </button>
               </div>
             </AdminOnly>
           </div>
 
-          {/* Project Meta Info with Status */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Project Meta Info with Status - Mobile optimized */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
             {/* Status Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Status</p>
                   <ProjectStatusBadge status={project?.status || 'pending'} />
                 </div>
-                <div className="h-12 w-12 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
-                  <CheckCircle2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
             </div>
 
             {/* Progress Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Progress</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{completionPercentage}%</p>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{completionPercentage}%</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">{completedTasks} / {totalTasks} tasks</p>
                 </div>
                 <ProjectProgressRing completedTasks={completedTasks} totalTasks={totalTasks} className="shrink-0" />
@@ -919,32 +974,32 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
 
             {/* Deadline Card */}
             {project?.deadline && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 shadow-sm sm:col-span-2 lg:col-span-1">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Deadline</p>
-                    <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                       {new Date(project.deadline).toLocaleDateString()}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
                       {Math.ceil((new Date(project.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left
                     </p>
                   </div>
-                  <div className="h-12 w-12 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center">
-                    <Calendar className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center flex-shrink-0">
+                    <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-600 dark:text-yellow-400" />
                   </div>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Admin Alert for Missing Elements */}
+          {/* Admin Alert for Missing Elements - Mobile optimized */}
           <AdminOnly>
             {(!project?.live_preview_url || !project?.repo_url || !project?.screenshots_urls?.length) && (
               <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-8">
                 <div className="flex items-start gap-3">
                   <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-medium text-amber-800 dark:text-amber-200 mb-1">
                       Project Setup Incomplete
                     </h3>
@@ -970,39 +1025,41 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
           </AdminOnly>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="space-y-8">
-          {/* Live Preview and Tasks Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Main Content Grid - Mobile optimized */}
+        <div className="space-y-6 sm:space-y-8">
+          {/* Live Preview and Tasks Row - Stack on mobile */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
             {/* Live Preview Section */}
             {project?.live_preview_url ? (
               <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-                <div className="border-b border-gray-200 dark:border-gray-700 p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center">
-                        <ExternalLink className="h-5 w-5 text-green-600 dark:text-green-400" />
+                <div className="border-b border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
+                        <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" />
                       </div>
-                      <div>
-                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Live Preview</h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">View the project in action</p>
+                      <div className="min-w-0">
+                        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">Live Preview</h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Mobile-optimized view</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
                       {project?.repo_url && (
                         <a
                           href={project.repo_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+                          className="inline-flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors flex-1 sm:flex-none justify-center"
                         >
                           <Github className="w-4 h-4" />
-                          GitHub Repo
+                          <span className="hidden sm:inline">GitHub Repo</span>
+                          <span className="sm:hidden">GitHub</span>
                         </a>
                       )}
                       <button
                         onClick={() => setIsFullscreen(true)}
-                        className="p-2 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                        className="p-2 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0"
+                        title="Fullscreen Preview"
                       >
                         <Maximize2 className="w-4 h-4" />
                       </button>
@@ -1010,7 +1067,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                   </div>
                 </div>
                 
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                   <ResponsivePreview 
                     url={project.live_preview_url} 
                     isFullscreen={isFullscreen}

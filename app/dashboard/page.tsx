@@ -21,11 +21,11 @@ const CardContent = ({ children, className = "" }: { children: React.ReactNode, 
 );
 
 const CardTitle = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
-  <h3 className={`text-lg font-bold tracking-tight font-heading text-foreground ${className}`}>{children}</h3>
+  <h3 className={`text-xl font-bold tracking-tight font-heading text-gray-900 dark:text-white ${className}`}>{children}</h3>
 );
 
 const CardDescription = ({ children }: { children: React.ReactNode }) => (
-  <p className="text-sm text-muted-foreground mt-1">{children}</p>
+  <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">{children}</p>
 );
 
 const Button = ({ children, variant = "default", className = "", asChild = false, ...props }: any) => {
@@ -51,20 +51,20 @@ const Button = ({ children, variant = "default", className = "", asChild = false
 
 export default function Dashboard() {
   return (
-    <div className="space-y-8 max-w-[1600px] mx-auto animate-in">
+    <div className="space-y-6 md:space-y-8 max-w-[1600px] mx-auto animate-in px-4 sm:px-6 lg:px-8">
       {/* Header Section */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between fade-in">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-heading gradient-text">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight font-heading gradient-text">
             Dashboard
           </h1>
-          <p className="text-muted-foreground mt-2 text-lg">
+          <p className="text-muted-foreground mt-2 text-base md:text-lg">
             Welcome back! Here's what's happening today.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <AdminOnly>
-            <Button asChild>
+            <Button asChild className="w-full sm:w-auto">
               <Link href="/projects/create">
                 <Plus className="mr-2 h-4 w-4" />
                 Create Project
@@ -83,22 +83,22 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="dashboard-grid-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         <Card 
-          className="md:col-span-2 glass-card card-3d has-video scale-in glow-effect hover:glow-effect-bright"
+          className="lg:col-span-2 glass-card card-3d has-video scale-in glow-effect hover:glow-effect-bright"
           videoSrc="/card.mp4"
-          videoOpacity="opacity-75" 
+          videoOpacity="opacity-60" 
           videoBlendMode="mix-blend-lighten dark:mix-blend-normal"
-          bgColor="bg-slate-500/75 dark:bg-gray-900/80"
-          borderColor="border-gray-200 dark:border-gray-700/50"
+          bgColor="bg-white/95 dark:bg-gray-900/95"
+          borderColor="border-gray-300 dark:border-gray-600"
         >
           <CardHeader>
-            <CardTitle className="font-bold text-xl gradient-text">Project Tracker</CardTitle>
+            <CardTitle className="font-bold text-lg md:text-xl gradient-text">Project Tracker</CardTitle>
             <CardDescription>Keep track of your current projects and milestones</CardDescription>
           </CardHeader>
           <CardContent>
             <Suspense fallback={
-              <div className="flex h-40 items-center justify-center">
+              <div className="flex h-32 md:h-40 items-center justify-center">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-primary border-t-transparent"></div>
               </div>
             }>
@@ -108,20 +108,20 @@ export default function Dashboard() {
         </Card>
 
         <Card 
-          className="md:col-span-1 glass-card card-3d has-video slide-in-from-right glow-effect-accent hover:glow-effect-accent-bright"
+          className="lg:col-span-1 glass-card card-3d has-video slide-in-from-right glow-effect-accent hover:glow-effect-accent-bright"
           videoSrc="/card.mp4"
-          videoOpacity="opacity-60" 
+          videoOpacity="opacity-50" 
           videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-          bgColor="bg-slate-500/75 dark:bg-gray-900/80"
-          borderColor="border-gray-200 dark:border-gray-700/50"
+          bgColor="bg-white/95 dark:bg-gray-900/95"
+          borderColor="border-gray-300 dark:border-gray-600"
         >
           <CardHeader>
-            <CardTitle className="font-bold text-xl gradient-text">Recent Activity</CardTitle>
+            <CardTitle className="font-bold text-lg md:text-xl gradient-text">Recent Activity</CardTitle>
             <CardDescription>Latest updates from the community</CardDescription>
           </CardHeader>
           <CardContent>
             <Suspense fallback={
-              <div className="flex h-40 items-center justify-center">
+              <div className="flex h-32 md:h-40 items-center justify-center">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-accent border-t-transparent"></div>
               </div>
             }>
@@ -137,16 +137,16 @@ export default function Dashboard() {
         videoSrc="/card.mp4"
         videoOpacity="opacity-50" 
         videoBlendMode="mix-blend-multiply dark:mix-blend-lighten"
-        bgColor="bg-slate-500/75 dark:bg-blue-900/20"
-        borderColor="border-blue-200 dark:border-blue-700/50"
+        bgColor="bg-white/95 dark:bg-blue-900/30"
+        borderColor="border-blue-300 dark:border-blue-600"
       >
         <CardHeader>
-          <CardTitle className="font-bold text-xl gradient-text">Announcements</CardTitle>
+          <CardTitle className="font-bold text-lg md:text-xl gradient-text">Announcements</CardTitle>
           <CardDescription>Important updates and news from the team</CardDescription>
         </CardHeader>
         <CardContent>
           <Suspense fallback={
-            <div className="flex h-32 items-center justify-center">
+            <div className="flex h-24 md:h-32 items-center justify-center">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-secondary border-t-transparent"></div>
             </div>
           }>
@@ -158,7 +158,7 @@ export default function Dashboard() {
       {/* Reviews Section */}
       <div>
         <Suspense fallback={
-          <div className="flex h-32 items-center justify-center">
+          <div className="flex h-24 md:h-32 items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-yellow border-t-transparent"></div>
           </div>
         }>

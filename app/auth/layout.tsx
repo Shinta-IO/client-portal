@@ -10,7 +10,7 @@ export default function AuthLayout({
 }) {
   return (
     <ThemeProvider>
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 relative p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 relative p-4 sm:p-6">
         {/* Background */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -29,7 +29,7 @@ export default function AuthLayout({
         </div>
         
         {/* Content */}
-        <div className="relative z-10 w-full max-w-sm">
+        <div className="relative z-10 w-full max-w-md mx-auto">
           {children}
         </div>
         
