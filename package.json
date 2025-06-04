@@ -23,7 +23,7 @@
     "@sendgrid/mail": "^8.1.5",
     "@stripe/react-stripe-js": "^3.7.0",
     "@stripe/stripe-js": "^7.3.1",
-    "@supabase/supabase-js": "^2.39.0",
+    "@supabase/supabase-js": "^2.49.10",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.0",
